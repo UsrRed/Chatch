@@ -2,9 +2,16 @@
 
 ## Instructions pour le projet
 
+Vous allez utiliser SCM-Plateforme collaborative de développement de l'Université de Tours accessible à partir de [https://scm.univ-tours.fr/](https://scm.univ-tours.fr/). Cette plateforme est comparable à d'autres disponibles en ligne comme [GitHub](https://github.com/), mais SCM-Plateforme est directement **accessible à partir de votre compte étudiant** et elle est **gratuite**.
+
+Voici plusieurs documentations utiles pour la suite :
+* [Documentation GitLab](https://docs.gitlab.com/)
+* [Principales commandes avec explications rapides](https://www.alternative-rvb.com/blog/git-aide-memoire/)
+* [Aide-mémoire](https://training.github.com/downloads/fr/github-git-cheat-sheet.pdf)
+
 1. Clonez ce projet (il suffit de faire un clone par groupe projet). Pour cela, vous devez exécuter la commande suivante dans le répertoire où vous voulez mettre votre dépôt local : `git clone https://scm.univ-tours.fr/soulet/sae302-template.git sae302-projet`
 Notez que le projet `sae302-template` est seulement accessible aux membres de l'université. Cette commande va créer un répertoire contenant une copie du dépôt distant.
-2. Modifiez le fichier README.md pour indiquer le nom de votre projet.
+2. Avec un éditeur de texte, modifiez le fichier README.md pour indiquer le nom de votre projet. Notez que l'extension .md réfère au langage markdown. Vous pouvez vous appuyer sur cette [documentation du markdown](https://docs.gitlab.com/ee/user/markdown.html).
 3. Poussez votre dépôt local sur le GitLab de l'université en changeant son nom.
 * Ajoutez le fichier à l'index : `git add README.md`
 * Faites le commit pour valider les changements sur le dépôt local : `git commit -m "First release!"`
@@ -16,7 +23,8 @@ git remote add origin https://scm.univ-tours.fr/soulet/sae302-projet.git
 git push origin main
 ```
 4. Invitez les autres membres de groupe pour qu'ils rejoignent votre projet. Pour le rôle, vous devez sélectionner mainteneur afin de pouvoir travailler directement sur la branche principale du projet.
-5. Clonez ce projet pour les autres membres afin de pouvoir travailler sur le même dépôt.
+5. Clonez ce projet pour les autres membres afin de pouvoir travailler sur le même dépôt et modifiez la liste des étudiants dans la partie README ci-dessous.
+> Il est important à chaque modification de faire un `add`, un `commit` et un `push` pour pousser ses modifications sur le dépôt distant. Pour que les autres mettent à jour leur projet, ils doivent exécuter une commande `pull`. Pour éviter les conflits, il faut éviter de travailler sur les mêmes fichiers en même temps.
 6. Connectez-vous à votre base de données MariaDB en utilisant MySQL Workbench et en créant une nouvelle connexion :
 * Hôte : 10.195.25.15
 * Port : 3306
@@ -34,7 +42,7 @@ db_user=
 db_pwd=
 db_name=
 ```
-Notez qu'il est important de ne pas mettre sur le dépôt distant ce fichier de configuraution car il contient des informations sensibles (même si le dépôt est uniquement ouvert en interne).
+> Il est important de ne pas mettre sur le dépôt distant ce fichier de configuraution car il contient des informations sensibles (même si le dépôt est uniquement ouvert en interne).
 10. Exécutez le programme Java de sorte à tester la connexion à la base de données.
 11. Supprimez ces instructions et conservez la partie ci-dessous pour décrire votre projet (notamment pour les livrables 2 et 3). Il s'agit juste d'un exemple de README que vous pouvez personnaliser à votre guise.
 
