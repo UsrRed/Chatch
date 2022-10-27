@@ -1,8 +1,14 @@
 # SAE302 - Nom de votre projet
 
-## Instructions pour le projet
+## Instructions pour mettre en place votre environnement de développement
 
-Vous allez utiliser SCM-Plateforme collaborative de développement de l'Université de Tours accessible à partir de [https://scm.univ-tours.fr/](https://scm.univ-tours.fr/). Cette plateforme est comparable à d'autres disponibles en ligne comme [GitHub](https://github.com/), mais SCM-Plateforme est directement **accessible à partir de votre compte étudiant** et elle est **gratuite**.
+L'objectif est de mettre en place un environnement de développement collaboratif pour votre projet. Vous configurerez un projet Java sous Eclipse IDE avec un code source existant qui interrogera une base de données MariaDB. Chaque membre du groupe pourra développer de son côté et apporter les modifications sur un dépôt distant.
+
+Les prérequis pour se lancer sont :
+* Connaitre la constitution de son groupe
+* Choisir un nom de projet sans espace pour construire le dépôt
+
+Vous allez utiliser SCM qui est la plateforme collaborative de développement de l'Université de Tours dont l'adresse Web est [https://scm.univ-tours.fr/](https://scm.univ-tours.fr/). Cette plateforme est comparable à d'autres disponibles en ligne comme [GitHub](https://github.com/), mais SCM est directement **accessible à partir de votre compte étudiant** et elle est **gratuite**.
 
 Voici plusieurs documentations utiles pour la suite :
 * [Documentation GitLab](https://docs.gitlab.com/)
@@ -30,7 +36,7 @@ git push origin main
 * Port : 3306
 * Identifiant de connexion : no d'etudiant + lettre t (par exemple 22007009t)
 * Mot de passe (ne pas retenir) : SGBD-Blois
-7. Modifiez votre mot de passe qui sera partagé avec les autres membres du projet (car il faut une seule base de données par projet). Pour cela, utilisez la commande SQL suivante : `SET PASSWORD FOR ``identifiant``@``%`` = PASSWORD('nouveau');` 
+7. Modifiez votre mot de passe qui sera partagé avec les autres membres du projet (car il faut une seule base de données par projet). Pour cela, utilisez la commande SQL suivante : `SET PASSWORD FOR 'identifiant'@'%' = PASSWORD('nouveau');` 
 8. Exécutez le script de création de la table dans le répertoire sql du projet et vérifiez avec des requêtes que les données sont bien crées.
 9. Créez et configurez un projet sous Eclipse à partir du dossier existant.
 * Créez un nouveau projet Java en sélectionnant le répertoire du dépôt local.
