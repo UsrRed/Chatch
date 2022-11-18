@@ -21,13 +21,8 @@ Notez que le projet `sae302-template` est seulement accessible aux membres de l'
 3. Poussez votre dépôt local sur le GitLab de l'université en changeant son nom.
 * Ajoutez le fichier à l'index : `git add README.md`
 * Faites le commit pour valider les changements sur le dépôt local : `git commit -m "First release!"`
-* Modifiez l'origine du dépôt distant pour mettre https://scm.univ-tours.fr/identifiant/sae302-projet.git
-* Poussez votre projet sur le dépôt distant
-```
-git remote rm origin
-git remote add origin https://scm.univ-tours.fr/soulet/sae302-projet.git
-git push origin main
-```
+* Modifiez l'origine du dépôt distant pour mettre https://scm.univ-tours.fr/identifiant/sae302-projet.git en utilisant des commandes du type  `git remote`. Il faut retirer l'ancienne origine et définir la nouvelle.
+* Poussez votre projet sur le dépôt distant en utilisant la commande `git push`
 4. Invitez les autres membres du groupe pour qu'ils rejoignent votre projet. Pour le rôle, vous devez sélectionner *mainteneur* afin de pouvoir travailler directement sur la branche principale du projet. Invitez *Arnaud Soulet* en tant qu'invité afin que je puisse voir votre projet pour le corriger.
 5. Pour les autres membres du projet, il faut vous constituer un dépôt local surlequel travailler. Pour cela, clonez ce projet afin de pouvoir travailler sur le même dépôt et modifiez la liste des étudiants dans la partie README ci-dessous.
 > Il est important à chaque modification de faire un `add`, un `commit` et un `push` pour pousser ses modifications sur le dépôt distant. Pour que les autres mettent à jour leur projet, ils doivent exécuter une commande `pull`. Pour éviter les conflits, il faut éviter de travailler sur les mêmes fichiers en même temps. Sinon, cela produit des conflits souvent difficiles à résoudre...
@@ -41,7 +36,7 @@ git push origin main
 9. Créez et configurez un projet sous Eclipse à partir du dossier existant.
 * Créez un nouveau projet Java en sélectionnant le répertoire du dépôt local.
 * Ajoutez la librairie `mariadb-java-client-3.0.8.jar` au `Build Path` afin de pouvoir utiliser ce driver pour la connexion. 
-* Ajoutez un fichier `properties/configuration.properties' avec les informations ci-dessous à compléter :
+* Ajoutez un fichier `properties/configuration.properties` avec les informations ci-dessous à compléter :
 ```
 db_host=10.195.25.15:3306
 db_user=
