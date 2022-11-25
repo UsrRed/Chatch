@@ -23,7 +23,7 @@ Précisez ici la liste des fonctionnalités que vous envisagez pour votre applic
     **- Stockage des messages dans la base de donnée pour voir les anciens messages.**
 
 Mettez quelques schéma pour préciser la forme de votre application.
-    **- Voir "[fonctionnalitées.drawio.svg](https://scm.univ-tours.fr/22104409t/sae302-chatch/-/blob/64cc34133a1ab94402d3822d60e1370064003aa4/Fonctionnalit%C3%A9es.drawio.svg)"**
+    **- Voir "[fonctionnalitées.drawio.svg](https://scm.univ-tours.fr/22104409t/sae302-chatch/-/blob/32d21932052bca49739201cf6585d743b71795fa/Fonctionnalit%C3%A9es.drawio.svg)"**
 
 
 ## Bases de données
