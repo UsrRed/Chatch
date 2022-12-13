@@ -28,4 +28,7 @@ public class Interface extends JFrame { // la classe Cadre1 hérite de la classe
         frame_menu.setChannels(listChan);
         frame_chat.setMessages(messages, frame_menu.getselected());
     }
+    public void reload_msg(ArrayList messages){
+        frame_chat.setMessages(messages);
+    }
 }
