@@ -27,8 +27,22 @@ public class Chat extends JPanel {
 
     }
 
-    public void setMessages(ArrayList messages_request, String channel) {
+    public void setMessages(ArrayList messages_request, Menu_Item channel) {
         for (Object msg : messages_request) {
+            JPanel box = new JPanel();
+            // crée l'objet message
+            Message message = new Message((ArrayList) msg);
+            if (message.type == 1) { // Message string classique
+                if (message.getId_discussion()!=channel.getId_discussion()) {
+                    box.add(new JLabel((String) message.getContenu(), JLabel.LEFT));
+                }
+            }
+            messages_frame.add(box);
+        }
+    }
+
+    public void setMessages(ArrayList messages_request_sorted) {
+        for (Object msg : messages_request_sorted) {
             JPanel box = new JPanel();
             // crée l'objet message
             Message message = new Message((ArrayList) msg);
