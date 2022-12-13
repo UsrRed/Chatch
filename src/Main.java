@@ -12,7 +12,7 @@ class Main {
           - Faire une interface avec des entrées
          */
         int id_utilisateur = 1;
-
+        // test gitLab
 
         BDD_Query request = new BDD_Query(data);
         // sql select des id_discussion que l'utilisateur possède
