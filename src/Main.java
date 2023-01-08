@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 class Main {
+    //test
     public static void main(String[] args) {
         Database data = new Database("10.195.25.15", "3306", "22104409t", "sae302");
         data.connect();
