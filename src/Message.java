@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Message {
+public class Message implements Serializable {
     protected int id; // id du message
     protected int id_discussion; // id de la discussion
     protected int id_utilisateur; // Qui a envoyé le message
@@ -16,6 +17,11 @@ public class Message {
         this.contenu = messages_request.get(3);
         this.date = (Date) messages_request.get(4);
         this.type = (int) messages_request.get(5);
+    }
+
+    public Message(String message) {
+        this.contenu = message;
+        this.type = 1;
     }
 
     public int getId() {
@@ -40,6 +46,18 @@ public class Message {
 
     public int getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id=" + id +
+                ", id_discussion=" + id_discussion +
+                ", id_utilisateur=" + id_utilisateur +
+                ", contenu=" + contenu +
+                ", date=" + date +
+                ", type=" + type +
+                '}';
     }
 
 
