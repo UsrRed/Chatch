@@ -1,48 +1,31 @@
-import java.net.*;
-import java.io.*;
 
-public class Serveur extends Thread {
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
-    final static int port = 9632;
-    private Socket socket;
+public class Serveur {
 
-    // tests
-    public static void main(String[] args) {
-        try {
-            ServerSocket socketServeur = new ServerSocket(port);
-            System.out.println("Lancement du serveur");
-            while (true) {
-                Socket socketClient = socketServeur.accept();
-                Serveur t = new Serveur(socketClient);
-                t.start();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    private static final int PORT = 10000; // socket port
+    private ServerSocket server = null;
+    private Socket socket = null;
+
+    public Serveur() throws IOException, ClassNotFoundException {
+        server = new ServerSocket(PORT);
+        int numeroClient = 1;
+        while (true) {
+            System.out.println("Attente Client");
+            socket = server.accept();
+            Packets t1 = new Packets(socket);
+            t1.start();
+            System.out.println("Client " + numeroClient + " se connecte !");
+            numeroClient++;
         }
+
     }
 
-    public Serveur(Socket socket) {
-        this.socket = socket;
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        new Serveur();
+
     }
 
-    public void run() {
-        traitements();
-    }
-
-    public void traitements() {
-        try {
-            String message = "";
-
-            System.out.println("Connexion avec le client : " + socket.getInetAddress());
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintStream out = new PrintStream(socket.getOutputStream());
-            message = in.readLine();
-            out.println("Bonjour " + message);
-
-            socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
