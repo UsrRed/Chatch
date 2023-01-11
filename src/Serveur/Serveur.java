@@ -20,7 +20,7 @@ public class Serveur {
         while ( state ) {
             System.out.println("Attente Client");
             socket = server.accept();
-            Traitement_client t1 = new Traitement_client(socket, data);
+            Traitement_client t1 = new Traitement_client(socket, data, PORT);
             t1.start();
             System.out.println("Client " + numeroClient + " se connecte !");
             numeroClient++;

@@ -1,5 +1,7 @@
 package tools;
 
+import Client.Client;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -24,9 +26,18 @@ public class Connect {
         } catch ( IOException e ) {
             throw new RuntimeException(e);
         }
-        send(Connection_Codes.CONNEXION);
+        // envoie du message "connection"
+        ArrayList<Object> message = new ArrayList<>();
+        message.add(id_utilisateur);
+        message.add(password);
+        try {
+            send(Connection_Codes.CONNEXION, message);
+        } catch ( IOException ex ) {
+            throw new RuntimeException(ex);
+        }
     }
-    public void send(Connection_Codes code, ArrayList<String> message) throws IOException {
+    public void send(Connection_Codes code, ArrayList<Object> message) throws IOException {
+        System.out.println("    -Envoie du message " + code);
         try {
             msg.setMessage(code, message);
             writer.writeObject(msg);
@@ -36,6 +47,7 @@ public class Connect {
         }
     }
     public void send(Connection_Codes code) throws IOException {
+        System.out.println("    -Envoie du message " + code);
         try {
             msg.setMessage(code);
             writer.writeObject(msg);

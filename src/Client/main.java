@@ -30,6 +30,7 @@ public class main {
         //------ArrayList messages = request.getQueryResult();
         // test connection TheBaye usr : 1 ; pass : 1234
         Client client = new Client(PORT, ADDRESS, 1, "1234");
+        client.run();
         // création de l'interface
         Interface appli = new Interface();
         //------appli.reload(channels, messages);

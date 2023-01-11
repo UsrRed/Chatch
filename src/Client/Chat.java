@@ -30,7 +30,7 @@ public class Chat extends JPanel {
             // récupère le texte de data_entry
             String data = data_entry.getText();
             // envoie le message
-            ArrayList<String> message = new ArrayList<>();
+            ArrayList<Object> message = new ArrayList<>();
             message.add(data);
             try {
                 Client.connexion.send(Connection_Codes.ENVOI_MESSAGE, message);

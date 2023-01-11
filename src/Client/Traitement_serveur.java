@@ -34,7 +34,7 @@ public class Traitement_serveur extends Thread {
                 // Traitement
                 if ( message != null ) {
                     Connection_Codes code = message.getContenu();
-                    ArrayList<String> annex = message.getAnnex();
+                    ArrayList<Object> annex = message.getAnnex();
                     switch ( code ) {
                         case CONNEXION_OK:
                             System.out.println("Connexion OK");

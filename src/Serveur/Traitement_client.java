@@ -15,8 +15,11 @@ public class Traitement_client extends Thread {
     private Socket socket = null;
     private Database data = null;
     private BDD_Query query = null;
+    private int PORT;
+    Connect client = null;
 
-    public Traitement_client(Socket socket, Database data) {
+    public Traitement_client(Socket socket, Database data, int PORT) {
+        this.PORT = PORT;
         this.socket = socket;
         this.data = data;
         query = new BDD_Query(data);
@@ -36,23 +39,31 @@ public class Traitement_client extends Thread {
                 } catch ( ClassNotFoundException | IOException e ) {
                     e.printStackTrace();
                 }
-                Connect client = new Connect(socket.getPort(), socket.getInetAddress(), 1, "password");
+                while ( client==null ) {
+                    try {
+                        client = new Connect(PORT+1, socket.getInetAddress(), 1, "password");
+                        Thread.sleep(1000);
+                    } catch ( IOException e ) {
+                        e.printStackTrace();
+                    } catch ( InterruptedException e ) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 // Traitement
                 if ( message != null ) {
                     Connection_Codes code = message.getContenu();
-                    ArrayList<String> annex = message.getAnnex();
+                    ArrayList<Object> annex = message.getAnnex();
                     switch ( code ) {
                         case CONNEXION:
                             System.out.println("Connexion");
-                            // ask database if user exists
-                            // if yes test password, then send CONNEXION_OK
-                            // else send CONNEXION_KO
-                            query.setQueryAsk("SELECT * FROM Utilisateur WHERE id_utilisateur = " + annex.get(0) + " AND password = '" + annex.get(1) + "'");
+                            query.setQueryAsk("SELECT * FROM utilisateur WHERE id_utilisateur = " + annex.get(0) + " AND motdepasse = '" + annex.get(1) + "'");
                             ArrayList res = query.getQueryResult();
                             if ( res.size() > 0 ) {
                                 client.send(Connection_Codes.CONNEXION_OK);
+                                System.out.println("Connexion OK");
                             } else {
                                 client.send(Connection_Codes.CONNEXION_KO);
+                                System.out.println("Connexion KO");
                             }
                             break;
                         case CREATION_DISCUSSION:

@@ -45,28 +45,31 @@ public class BDD_Query {
             types = new ArrayList<>();
             result = new ArrayList<>();
             ResultSet res = BDD.Query(query);
-            ResultSetMetaData meta = res.getMetaData();
-            int NbColumn = meta.getColumnCount();
-            for (int i = 1; i <= NbColumn; i++) {
-                try {
-                    types.add(meta.getColumnLabel(i));
-                } catch ( SQLException e ) {
-                    types.add(null);
-                }
-            }
-            // construction d'une ArrayList constitué de sub ArrayList (réponse SQL de plusieurs lignes)
-            while ( res.next() ) {
-                ArrayList<Object> sub = new ArrayList<>();
+            if (res != null) {
+                ResultSetMetaData meta = res.getMetaData();
+                int NbColumn = meta.getColumnCount();
                 for (int i = 1; i <= NbColumn; i++) {
                     try {
-                        sub.add(res.getObject(i));
+                        types.add(meta.getColumnLabel(i));
                     } catch ( SQLException e ) {
-                        sub.add(null);
+                        types.add(null);
                     }
-
                 }
-                result.add(sub);
+                // construction d'une ArrayList constitué de sub ArrayList (réponse SQL de plusieurs lignes)
+                while ( res.next() ) {
+                    ArrayList<Object> sub = new ArrayList<>();
+                    for (int i = 1; i <= NbColumn; i++) {
+                        try {
+                            sub.add(res.getObject(i));
+                        } catch ( SQLException e ) {
+                            sub.add(null);
+                        }
+
+                    }
+                    result.add(sub);
+                }
             }
+
         } catch ( SQLException e ) {
             e.printStackTrace();
         }
