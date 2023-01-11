@@ -9,8 +9,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import tools.Database;
-
 /**
  * This is just a simple source code for connecting to your database and
  * querying a table
@@ -37,7 +35,7 @@ public class DatabaseTest {
 		String pwd = properties.getProperty("db_pwd");
 		String dbname = properties.getProperty("db_name");
 
-		// connect to the database (see Database.java class)
+		// connect to the database (see Serveur.Database.java class)
 		Connection connection = Database.getConnection(host, user, pwd, dbname);
 
 		// example of a simple SELECT query

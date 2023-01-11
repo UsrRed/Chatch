@@ -1393,7 +1393,7 @@
   <commands xmi:id="_Qr6mrXrFEe2aRqWkseopsQ" elementId="org.eclipse.egit.ui.team.PushTags" commandName="Push Tags..." category="_Qr6mKHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6mrnrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.open.type.hierarchy" commandName="Open Type Hierarchy" description="Open a type hierarchy on the selected element" category="_Qr6mGHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6mr3rFEe2aRqWkseopsQ" elementId="org.eclipse.egit.ui.ContinueRebase" commandName="Continue Rebase" category="_Qr6mKHrFEe2aRqWkseopsQ"/>
-  <commands xmi:id="_Qr6msHrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.extract.interface" commandName="Extract Interface" description="Extract a set of members into a new interface and try to use the new interface" category="_Qr6mIHrFEe2aRqWkseopsQ"/>
+  <commands xmi:id="_Qr6msHrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.extract.interface" commandName="Extract Client.Interface" description="Extract a set of members into a new interface and try to use the new interface" category="_Qr6mIHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6msXrFEe2aRqWkseopsQ" elementId="org.eclipse.help.ui.closeTray" commandName="Close User Assistance Tray" description="Close the user assistance tray containing context help information and cheat sheets." category="_Qr6mIXrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6msnrFEe2aRqWkseopsQ" elementId="org.eclipse.egit.ui.history.CreatePatch" commandName="Create Patch..." category="_Qr6mLnrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6ms3rFEe2aRqWkseopsQ" elementId="org.eclipse.ltk.ui.refactoring.commands.moveResources" commandName="Move Resources" description="Move the selected resources and notify LTK participants." category="_Qr6mKnrFEe2aRqWkseopsQ"/>
@@ -1465,7 +1465,7 @@
   <commands xmi:id="_Qr6m8nrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.remove.block.comment" commandName="Remove Block Comment" description="Remove the block comment enclosing the selection" category="_Qr6mLHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6m83rFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.search.method.exits" commandName="Search Method Exit Occurrences in File" description="Search for method exit occurrences of a selected return type" category="_Qr6mJHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6m9HrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.open.implementation" commandName="Open Implementation" description="Opens the Implementations of a method or a type in its hierarchy" category="_Qr6mGHrFEe2aRqWkseopsQ"/>
-  <commands xmi:id="_Qr6m9XrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.junit.gotoTest" commandName="Referring Tests" description="Referring Tests" category="_Qr6mJHrFEe2aRqWkseopsQ"/>
+  <commands xmi:id="_Qr6m9XrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.junit.gotoTest" commandName="Referring test.Tests" description="Referring test.Tests" category="_Qr6mJHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6m9nrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.folding.collapseMembers" commandName="Collapse Members" description="Collapse all members" category="_Qr6mF3rFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6m93rFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.find.broken.nls.keys" commandName="Find Broken Externalized Strings" description="Finds undefined, duplicate and unused externalized string keys in property files" category="_Qr6mLHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6m-HrFEe2aRqWkseopsQ" elementId="org.eclipse.eclemma.ui.openSessionExecutionData" commandName="Open Execution Data" category="_Qr6mGnrFEe2aRqWkseopsQ"/>
@@ -1819,9 +1819,9 @@
   <commands xmi:id="_Qr6oRHrFEe2aRqWkseopsQ" elementId="org.eclipse.eclemma.ui.importSession" commandName="Import Session..." category="_Qr6mGnrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6oRXrFEe2aRqWkseopsQ" elementId="org.eclipse.ui.navigate.previousTab" commandName="Previous Tab" description="Switch to the previous tab" category="_Qr6mGHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6oRnrFEe2aRqWkseopsQ" elementId="org.eclipse.jdt.ui.edit.text.java.select.previous" commandName="Select Previous Element" description="Expand selection to include previous sibling" category="_Qr6mEnrFEe2aRqWkseopsQ"/>
-  <commands xmi:id="_Qr6oR3rFEe2aRqWkseopsQ" elementId="org.eclipse.ui.dialogs.openMessageDialog" commandName="Open Message Dialog" description="Open a Message Dialog" category="_Qr6mJnrFEe2aRqWkseopsQ">
+  <commands xmi:id="_Qr6oR3rFEe2aRqWkseopsQ" elementId="org.eclipse.ui.dialogs.openMessageDialog" commandName="Open tools.Connection_format Dialog" description="Open a tools.Connection_format Dialog" category="_Qr6mJnrFEe2aRqWkseopsQ">
     <parameters xmi:id="_Qr6oSHrFEe2aRqWkseopsQ" elementId="title" name="Title"/>
-    <parameters xmi:id="_Qr6oSXrFEe2aRqWkseopsQ" elementId="message" name="Message"/>
+    <parameters xmi:id="_Qr6oSXrFEe2aRqWkseopsQ" elementId="messageServeur" name="tools.Connection_format"/>
     <parameters xmi:id="_Qr6oSnrFEe2aRqWkseopsQ" elementId="imageType" name="Image Type Constant" typeId="org.eclipse.ui.dialogs.Integer"/>
     <parameters xmi:id="_Qr6oS3rFEe2aRqWkseopsQ" elementId="defaultIndex" name="Default Button Index" typeId="org.eclipse.ui.dialogs.Integer"/>
     <parameters xmi:id="_Qr6oTHrFEe2aRqWkseopsQ" elementId="buttonLabel0" name="First Button Label"/>
@@ -2039,7 +2039,7 @@
   <commands xmi:id="_Qr6pE3rFEe2aRqWkseopsQ" elementId="org.eclipse.egit.ui.RepositoriesViewRemoveRemote" commandName="Delete Remote" category="_Qr6mKHrFEe2aRqWkseopsQ"/>
   <commands xmi:id="_Qr6pFHrFEe2aRqWkseopsQ" elementId="org.eclipse.ui.dialogs.openInputDialog" commandName="Open Input Dialog" description="Open an Input Dialog" category="_Qr6mJnrFEe2aRqWkseopsQ">
     <parameters xmi:id="_Qr6pFXrFEe2aRqWkseopsQ" elementId="title" name="Title"/>
-    <parameters xmi:id="_Qr6pFnrFEe2aRqWkseopsQ" elementId="message" name="Message"/>
+    <parameters xmi:id="_Qr6pFnrFEe2aRqWkseopsQ" elementId="messageServeur" name="tools.Connection_format"/>
     <parameters xmi:id="_Qr6pF3rFEe2aRqWkseopsQ" elementId="initialValue" name="Initial Value"/>
     <parameters xmi:id="_Qr6pGHrFEe2aRqWkseopsQ" elementId="cancelReturns" name="Return Value on Cancel"/>
   </commands>

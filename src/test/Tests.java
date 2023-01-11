@@ -1,3 +1,7 @@
+package test;
+
+import Serveur.BDD_Query;
+import Serveur.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

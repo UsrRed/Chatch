@@ -1,3 +1,5 @@
+package tools;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,7 +10,7 @@ public class Message implements Serializable {
     protected int id_utilisateur; // Qui a envoyé le message
     protected Object contenu; // varchar 1000 avec soit text, soit image etc
     protected Date date; // Date du message
-    protected int type; // type de message (img/text/autre)
+    protected int type; // type de message (img/text/autre) 1 : text, 2 : image, 3 : autre
 
     public Message(ArrayList messages_request) {
         this.id = (int) messages_request.get(0);
@@ -17,11 +19,6 @@ public class Message implements Serializable {
         this.contenu = messages_request.get(3);
         this.date = (Date) messages_request.get(4);
         this.type = (int) messages_request.get(5);
-    }
-
-    public Message(String message) {
-        this.contenu = message;
-        this.type = 1;
     }
 
     public int getId() {
@@ -50,7 +47,7 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return "Message{" +
+        return "tools.Message{" +
                 "id=" + id +
                 ", id_discussion=" + id_discussion +
                 ", id_utilisateur=" + id_utilisateur +
@@ -60,9 +57,7 @@ public class Message implements Serializable {
                 '}';
     }
 
-
-
-    public void modify(String contenu, int type){
+    public void modify(String contenu, int type) {
         this.contenu = contenu;
         this.type = type;
     }

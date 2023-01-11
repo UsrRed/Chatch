@@ -1,3 +1,5 @@
+package Serveur;
+
 import java.sql.*;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -11,12 +13,13 @@ public class Database {
 
     /**
      * Crée l'objet BDD
-     * @param ip adresse ip destination en String
-     * @param port port utilisé en String
+     *
+     * @param ip          adresse ip destination en String
+     * @param port        port utilisé en String
      * @param identifiant identifiant en String
-     * @param password password de connection BDD en String
+     * @param password    password de connection BDD en String
      */
-    public Database(String ip, String port, String identifiant, String password){
+    public Database(String ip, String port, String identifiant, String password) {
         this.ip = ip;
         this.port = port;
         this.identifiant = identifiant;
@@ -25,28 +28,31 @@ public class Database {
 
     /**
      * Permet d'effectuer des requêtes sans arguments
+     *
      * @param query requête a faire
      * @return ArrayList avec tous les résultats (dur a manipuler)
      */
-    public ResultSet Query(String query){
+    public ResultSet Query(String query) {
         try {
             Statement statement = conn.createStatement();
             return statement.executeQuery(query);
-        } catch (SQLException e) {
+        } catch ( SQLException e ) {
             e.printStackTrace();
             return null;
         }
     }
+
     /**
      * Permet d'effectuer des requêtes sans arguments
+     *
      * @param query requête a faire
      * @return ArrayList avec tous les résultats (dur a manipuler)
      */
-    public boolean Do(String query){
+    public boolean Do(String query) {
         try {
             Statement statement = conn.createStatement();
             return statement.execute(query);
-        } catch (SQLException e) {
+        } catch ( SQLException e ) {
             e.printStackTrace();
             return false;
         }
@@ -55,11 +61,11 @@ public class Database {
     /**
      * Connection a la base de donnée
      */
-    public void connect(){
+    public void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://" + ip + ":" + port + "/" + identifiant + "", identifiant, password);
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch ( ClassNotFoundException | SQLException e ) {
             e.printStackTrace();
         }
 
@@ -68,22 +74,23 @@ public class Database {
     /**
      * Déconnection de la BDD
      */
-    public void disconnect(){
-        if (conn != null) {
+    public void disconnect() {
+        if ( conn != null ) {
             try {
                 conn.close();
-            } catch (SQLException e) {
+            } catch ( SQLException e ) {
                 e.printStackTrace();
             }
         }
     }
-    public boolean state(){
+
+    public boolean state() {
         return conn == null;
     }
 
     @Override
     public String toString() {
-        if (conn != null) {
+        if ( conn != null ) {
             return conn.toString();
         } else {
             return "Connection non établie...";
