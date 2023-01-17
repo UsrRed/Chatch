@@ -1,7 +1,5 @@
 package Client;
 
-import org.jetbrains.annotations.NotNull;
-
 import javax.swing.*;
 import java.awt.*; // utilisation des classes du package awt
 import java.util.ArrayList;

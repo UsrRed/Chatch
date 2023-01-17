@@ -51,17 +51,17 @@ public class BDD_Query {
                 for (int i = 1; i <= NbColumn; i++) {
                     try {
                         types.add(meta.getColumnLabel(i));
-                    } catch ( SQLException e ) {
+                    } catch (SQLException e) {
                         types.add(null);
                     }
                 }
                 // construction d'une ArrayList constitué de sub ArrayList (réponse SQL de plusieurs lignes)
-                while ( res.next() ) {
+                while (res.next()) {
                     ArrayList<Object> sub = new ArrayList<>();
                     for (int i = 1; i <= NbColumn; i++) {
                         try {
                             sub.add(res.getObject(i));
-                        } catch ( SQLException e ) {
+                        } catch (SQLException e) {
                             sub.add(null);
                         }
 
@@ -70,7 +70,7 @@ public class BDD_Query {
                 }
             }
 
-        } catch ( SQLException e ) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -105,7 +105,7 @@ public class BDD_Query {
     @Override
     public String toString() {
         StringBuilder prt = new StringBuilder();
-        if ( result != null ) {
+        if (result != null) {
             for (Object type : types) {
                 prt.append("\t|\t").append(type);
             }

@@ -22,6 +22,7 @@ public class Interface_Connection extends JFrame {
             throw new RuntimeException(e);
         }
     }
+
     public JPanel cards = new JPanel(new CardLayout());
     public CardLayout cardLayout;
 
@@ -116,7 +117,7 @@ public class Interface_Connection extends JFrame {
         setForeground(Color.black); // couleur du texte
         // placement des éléments
 
-        cards.add(Connexion , "Connexion");
+        cards.add(Connexion, "Connexion");
         cards.add(Inscription, "Inscription");
         add(cards);
         cardLayout.show(cards, "Connexion");
@@ -154,7 +155,7 @@ public class Interface_Connection extends JFrame {
         });
         Cr_button_inscription.addActionListener(e -> {
             System.out.println("Inscription");
-            if(Cr_password_text.getText().equals(Cr_password_confirm_text.getText())){
+            if (Cr_password_text.getText().equals(Cr_password_confirm_text.getText())) {
                 ArrayList<String> data = new ArrayList<>();
                 data.add(Cr_mail_text.getText());
                 data.add(Cr_description_text.getText());
@@ -164,8 +165,7 @@ public class Interface_Connection extends JFrame {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-            }
-            else{
+            } else {
                 System.out.println("Les mots de passe ne correspondent pas");
             }
         });
@@ -174,6 +174,7 @@ public class Interface_Connection extends JFrame {
     public void error(String message) {
         JOptionPane.showMessageDialog(this, message, "Erreur", JOptionPane.ERROR_MESSAGE);
     }
+
     public void success(String message) {
         JOptionPane.showMessageDialog(this, message, "Succès", JOptionPane.INFORMATION_MESSAGE);
     }

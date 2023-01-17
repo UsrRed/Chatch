@@ -20,6 +20,7 @@ public class Database {
      * @param password    password de connection BDD en String
      */
     public Database(String ip, String port, String identifiant, String password) {
+        // TODO Connexion with properties file
         this.ip = ip;
         this.port = port;
         this.identifiant = identifiant;
@@ -36,7 +37,7 @@ public class Database {
         try {
             Statement statement = conn.createStatement();
             return statement.executeQuery(query);
-        } catch ( SQLException e ) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
@@ -52,7 +53,7 @@ public class Database {
         try {
             Statement statement = conn.createStatement();
             return statement.execute(query);
-        } catch ( SQLException e ) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -65,7 +66,7 @@ public class Database {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://" + ip + ":" + port + "/" + identifiant + "", identifiant, password);
-        } catch ( ClassNotFoundException | SQLException e ) {
+        } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
 
@@ -75,10 +76,10 @@ public class Database {
      * Déconnection de la BDD
      */
     public void disconnect() {
-        if ( conn != null ) {
+        if (conn != null) {
             try {
                 conn.close();
-            } catch ( SQLException e ) {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
@@ -90,7 +91,7 @@ public class Database {
 
     @Override
     public String toString() {
-        if ( conn != null ) {
+        if (conn != null) {
             return conn.toString();
         } else {
             return "Connection non établie...";

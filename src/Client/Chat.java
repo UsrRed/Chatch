@@ -5,6 +5,7 @@ import tools.Message;
 import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import tools.Connection_Codes;
 
 public class Chat extends JPanel {
@@ -33,8 +34,8 @@ public class Chat extends JPanel {
             ArrayList<Object> message = new ArrayList<>();
             message.add(data);
             try {
-                Client.connexion.send(Connection_Codes.ENVOI_MESSAGE, message);
-            } catch ( IOException ex ) {
+                Thread_Client.connexion.send(Connection_Codes.ENVOI_MESSAGE, message);
+            } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
             // vide la zone de texte
@@ -53,8 +54,8 @@ public class Chat extends JPanel {
             JPanel box = new JPanel();
             // crée l'objet message
             Message message = new Message((ArrayList) msg);
-            if ( message.getType() == 1 ) { // Message string classique
-                if ( message.getId_discussion() != channel.getId_discussion() ) {
+            if (message.getType() == 1) { // Message string classique
+                if (message.getId_discussion() != channel.getId_discussion()) {
                     box.add(new JLabel((String) message.getContenu(), JLabel.LEFT));
                 }
             }
@@ -67,7 +68,7 @@ public class Chat extends JPanel {
             JPanel box = new JPanel();
             // crée l'objet message
             Message message = new Message((ArrayList) msg);
-            if ( message.getType() == 1 ) { // Message string classique
+            if (message.getType() == 1) { // Message string classique
                 box.add(new JLabel((String) message.getContenu(), JLabel.LEFT));
             }
             messages_frame.add(box);

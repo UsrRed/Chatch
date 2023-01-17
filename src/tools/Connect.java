@@ -1,7 +1,5 @@
 package tools;
 
-import Client.Client;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -16,43 +14,57 @@ public class Connect {
     private ObjectOutputStream writer = null;
     private Connection_format msg = null;
 
-    public Connect(int PORT, InetAddress address, int id_utilisateur, String password) throws IOException {
-        msg = new Connection_format(id_utilisateur, password);
+    public Connect(int PORT, InetAddress address, String nom_utilisateur, String password, Boolean exist, ArrayList<String> data) throws IOException {
         try {
-            socket =new Socket(address, PORT);
-            System.out.println("connecté "+ socket);
+            socket = new Socket(address, PORT);
+            System.out.println("connecté " + socket);
             out = socket.getOutputStream();
             writer = new ObjectOutputStream(out);
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        // envoie du message "connection"
         ArrayList<Object> message = new ArrayList<>();
-        message.add(id_utilisateur);
+        message.add(nom_utilisateur);
         message.add(password);
-        try {
-            send(Connection_Codes.CONNEXION, message);
-        } catch ( IOException ex ) {
-            throw new RuntimeException(ex);
+        if (exist) {
+            // envoie du message "connection"
+            try {
+                send(Connection_Codes.CONNEXION, message);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        } else {
+            // envoie du message "CREATION_UTILISATEUR"
+            // le mail
+            message.add(data.get(0));
+            // la description
+            message.add(data.get(1));
+            try {
+                send(Connection_Codes.CREATION_UTILISATEUR, message);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
+
     public void send(Connection_Codes code, ArrayList<Object> message) throws IOException {
         System.out.println("    -Envoie du message " + code);
         try {
-            msg.setMessage(code, message);
+            msg = new Connection_format(code, message);
             writer.writeObject(msg);
             writer.flush();
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
     public void send(Connection_Codes code) throws IOException {
         System.out.println("    -Envoie du message " + code);
         try {
-            msg.setMessage(code);
+            msg = new Connection_format(code);
             writer.writeObject(msg);
             writer.flush();
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

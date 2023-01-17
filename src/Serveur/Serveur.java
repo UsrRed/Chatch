@@ -15,15 +15,12 @@ public class Serveur {
         data.connect();
 
         server = new ServerSocket(PORT);
-        int numeroClient = 1;
         Boolean state = true;
-        while ( state ) {
+        while (state) {
             System.out.println("Attente Client");
             socket = server.accept();
             Traitement_client t1 = new Traitement_client(socket, data, PORT);
             t1.start();
-            System.out.println("Client " + numeroClient + " se connecte !");
-            numeroClient++;
         }
         // déconnexion de la BDD
         data.disconnect();

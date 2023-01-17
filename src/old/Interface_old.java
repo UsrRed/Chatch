@@ -1,4 +1,4 @@
-package chatch.ressources.old;
+package old;
 
 import java.awt.*; // utilisation des classes du package awt
 class Interface_old extends Frame { // la classe Cadre1 hérite de la classe des fenêtres Frame
