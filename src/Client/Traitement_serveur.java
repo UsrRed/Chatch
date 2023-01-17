@@ -55,7 +55,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case CONNEXION_KO:
                                 System.out.println("Connexion KO");
-                                //fen.error("Connection échouée !");
+                                fen.error("Connection échouée !");
                                 break;
                             case DECONNEXION_OK:
                                 System.out.println("Deconnexion OK");

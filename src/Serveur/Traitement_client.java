@@ -58,17 +58,36 @@ public class Traitement_client extends Thread {
                 }
                 // Traitement
                 if (message != null) {
+                    // initialisation des variables
                     Connection_Codes code = message.getContenu();
                     ArrayList<Object> annex = message.getAnnex();
+                    if (annex != null) {
+                        for (int i = 0; i < annex.size(); i++) {
+                            if (annex.get(i) instanceof String) {
+                                // sanitize les réponses utilisateur
+                                annex.set(i, Objects.requireNonNull(annex.get(i)).toString().replaceAll("[^a-zA-Z0-9_]", ""));
+                                // ajouter des ' ' autour des Strings
+                                if (!annex.get(i).toString().equals("")) {
+                                    annex.set(i, "'" + annex.get(i) + "'");
+                                }
+                            }
+                        }
+                    }
+                    Boolean res = false;
                     try {
                         ArrayList<String> extract = Extraction(annex);
+                        System.out.println("Extraction : \n" + extract.get(0) + "\n" + extract.get(1));
+
+                        // trie des différents codes
                         if (code == Connection_Codes.CONNEXION) {
                             Afficher("Connexion");
-                            query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur = " + annex.get(0) + " AND motdepasse = '" + annex.get(1) + "'");
-                            ArrayList<Object> res = query.getQueryResult();
-                            if (res.size() > 0) {
+                            query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur=" + annex.get(0) + " AND motdepasse=" + annex.get(1) + ";");
+                            ArrayList<Object> result = query.getQueryResult();
+                            System.out.println(res);
+                            if (result.size() > 0) {
                                 client.send(Connection_Codes.CONNEXION_OK);
-                                ArrayList cl = (ArrayList) res.get(0);
+                                // récupération de l'id de l'utilisateur
+                                ArrayList cl = (ArrayList) result.get(0);
                                 id = (int) cl.get(0);
                                 connected = true;
                             } else {
@@ -80,35 +99,114 @@ public class Traitement_client extends Thread {
                                     break;
                                 case CREATION_DISCUSSION:
                                     Afficher("Creation discussion");
-                                    query.setQueryAsk("INSERT INTO discussion (" + extract.get(0) + ") VALUES(" + extract.get(1) + ")");
+                                    if (extract != null) {
+                                        res = query.setQueryExecute("INSERT INTO discussion (" + extract.get(0) + ") VALUES(" + extract.get(1) + ");");
+                                        if (res) {
+                                            client.send(Connection_Codes.CREATION_DISCUSSION_OK);
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("Erreur lors de la création de la discussion");
+                                            client.send(Connection_Codes.CREATION_DISCUSSION_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur de format");
+                                        client.send(Connection_Codes.CREATION_DISCUSSION_KO, error);
+                                    }
                                     break;
                                 case SUPPRESSION_DISCUSSION:
                                     Afficher("Suppression discussion");
-                                    query.setQueryAsk("DELETE FROM discussion WHERE id_discussion = " + annex.get(0) + " ;");
+                                    res = query.setQueryExecute("DELETE FROM discussion WHERE id_discussion = " + annex.get(0) + ";");
+                                    if (res) {
+                                        client.send(Connection_Codes.SUPPRESSION_DISCUSSION_OK);
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur lors de la suppression de la discussion");
+                                        client.send(Connection_Codes.SUPPRESSION_DISCUSSION_KO, error);
+                                    }
                                     break;
                                 case MODIFICATION_DISCUSSION:
                                     Afficher("Modification discussion");
-                                    query.setQueryAsk("UPDATE FROM discussion SET colone = " + extract.get(0) + " WHERE id_discussion = " + extract.get(1) + " ;");
+                                    if (extract != null) {
+                                        res = query.setQueryExecute("UPDATE FROM discussion SET colone = " + extract.get(0) + " WHERE id_discussion = " + extract.get(1) + ";");
+                                        if (res) {
+                                            client.send(Connection_Codes.MODIFICATION_DISCUSSION_OK);
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("Erreur lors de la modification de la discussion");
+                                            client.send(Connection_Codes.MODIFICATION_DISCUSSION_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur de format");
+                                        client.send(Connection_Codes.MODIFICATION_DISCUSSION_KO, error);
+                                    }
                                     break;
                                 case ENVOI_MESSAGE:
                                     Afficher("Envoi message");
-                                    query.setQueryAsk("INSERT INTO message (" + extract.get(0) + ") VALUES(" + extract.get(1) + ");");
+                                    if (extract != null) {
+                                        res = query.setQueryExecute("INSERT INTO message (" + extract.get(0) + ") VALUES(" + extract.get(1) + ");");
+                                        if (res) {
+                                            client.send(Connection_Codes.ENVOI_MESSAGE_OK);
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("Erreur lors de l'envoi du message");
+                                            client.send(Connection_Codes.ENVOI_MESSAGE_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur de format");
+                                        client.send(Connection_Codes.ENVOI_MESSAGE_KO, error);
+                                    }
                                     break;
                                 case SUPPRESSION_MESSAGE:
                                     Afficher("Suppression message");
-                                    query.setQueryAsk("DELETE FROM message WHERE id_message=" + annex.get(0) + " ;");
+                                    res = query.setQueryExecute("DELETE FROM message WHERE id_message=" + annex.get(0) + ";");
+                                    if (res) {
+                                        client.send(Connection_Codes.SUPPRESSION_MESSAGE_OK);
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur lors de la suppression du message");
+                                        client.send(Connection_Codes.SUPPRESSION_MESSAGE_KO, error);
+                                    }
                                     break;
                                 case MODIFICATION_MESSAGE:
                                     Afficher("Modification message");
-                                    query.setQueryAsk("UPDATE message SET contenu=" + extract.get(0) + " WHERE id_message = " + extract.get(1) + " ;");
+                                    if (extract != null) {
+                                        res = query.setQueryExecute("UPDATE message SET contenu=" + extract.get(0) + " WHERE id_message = " + extract.get(1) + ";");
+                                        if (res) {
+                                            client.send(Connection_Codes.MODIFICATION_MESSAGE_OK);
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("Erreur lors de la modification du message");
+                                            client.send(Connection_Codes.MODIFICATION_MESSAGE_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur de format");
+                                        client.send(Connection_Codes.MODIFICATION_MESSAGE_KO, error);
+                                    }
                                     break;
                                 case CREATION_GROUPE:
                                     Afficher("Creation groupe");
-                                    query.setQueryAsk("INSERT INTO groupe_discussion (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
+                                    if (extract != null) {
+                                        res = query.setQueryExecute("INSERT INTO groupe_discussion (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
+                                        if (res) {
+                                            client.send(Connection_Codes.CREATION_GROUPE_OK);
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("Erreur lors de la création du groupe");
+                                            client.send(Connection_Codes.CREATION_GROUPE_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur de format");
+                                        client.send(Connection_Codes.CREATION_GROUPE_KO, error);
+                                    }
                                     break;
                                 case SUPPRESSION_GROUPE:
                                     Afficher("Suppression groupe");
-                                    query.setQueryAsk("DELETE FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + "... ;");
+                                    query.setQueryExecute("DELETE FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + "... ;");
                                     break;
                                 case MODIFICATION_GROUPE:
                                     Afficher("Modification groupe");
@@ -116,11 +214,18 @@ public class Traitement_client extends Thread {
                                     break;
                                 case SUPPRESSION_UTILISATEUR:
                                     Afficher("Suppression utilisateur");
-                                    query.setQueryAsk("DELETE FROM utilisateur WHERE id_utilisateur= " + extract.get(0) + ";");
+                                    res = query.setQueryExecute("DELETE FROM utilisateur WHERE id_utilisateur= " + annex.get(0) + ";");
+                                    if (res) {
+                                        client.send(Connection_Codes.SUPPRESSION_UTILISATEUR_OK);
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur lors de la suppression de l'utilisateur");
+                                        client.send(Connection_Codes.SUPPRESSION_UTILISATEUR_KO, error);
+                                    }
                                     break;
                                 case MODIFICATION_UTILISATEUR:
                                     Afficher("Modification utilisateur");
-                                    //query.setQueryAsk("UPDATE utilisateur SET nom_de_colonne ="+ extract.get(0) +" WHERE id_utilisateur= "+ extract.get(1) +" ;");
+                                    //query.setQueryExecute("UPDATE utilisateur SET nom_de_colonne ="+ extract.get(0) +" WHERE id_utilisateur= "+ extract.get(1) +" ;");
                                     break;
                                 case CREATION_ADMIN_GROUPE:
                                     Afficher("Creation admin groupe");
@@ -140,7 +245,31 @@ public class Traitement_client extends Thread {
                             }
                         } else if (code == Connection_Codes.CREATION_UTILISATEUR) {
                             Afficher("Creation utilisateur");
-                            query.setQueryAsk("INSERT INTO utilisateur (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
+                            if (extract != null) {
+                                // On vérifie que l'utilisateur n'existe pas déjà
+                                query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur = '" + annex.get(1) + "';");
+                                if (query.getQueryResult().size()>0){
+                                    System.out.println("Extraction2 : \n" + extract.get(0) + "\n" + extract.get(1));
+                                    // Impossible de comprendre pourquoi la syntax sql est détruite !
+                                    res = query.setQueryExecute("INSERT INTO utilisateur (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
+                                    if (res) {
+                                        client.send(Connection_Codes.CREATION_UTILISATEUR_OK);
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur lors de la création de l'utilisateur");
+                                        client.send(Connection_Codes.CREATION_UTILISATEUR_KO, error);
+                                    }
+                                } else {
+                                    ArrayList<Object> error = new ArrayList<>();
+                                    error.add("L'utilisateur existe déjà");
+                                    client.send(Connection_Codes.CREATION_UTILISATEUR_KO, error);
+                                }
+
+                            } else {
+                                ArrayList<Object> error = new ArrayList<>();
+                                error.add("Erreur de format");
+                                client.send(Connection_Codes.CREATION_UTILISATEUR_KO, error);
+                            }
                         } else {
                             Afficher("Non connecté tente de faire une action");
                             ArrayList<Object> sended = new ArrayList<>();
@@ -164,32 +293,46 @@ public class Traitement_client extends Thread {
     }
 
     public ArrayList<String> Extraction(ArrayList<Object> annex) {
-        if (annex.size() % 2 == 0) {
-            String txt = "";
-            String txt2 = "";
-            for (int i = 0; i < annex.size() / 2; i++) {
-                if (i == annex.size() / 2 - 1) {
-                    txt += annex.get(i * 2);
-                    txt2 += annex.get(i * 2 + 1);
+        if (annex != null) {
+            if(annex.stream().allMatch(String.class::isInstance)){
+                if (annex.size() % 2 == 0) {
+                    String txt = "";
+                    String txt2 = "";
+                    for (int i = 0; i < annex.size() / 2; i++) {
+                        if (i == annex.size() / 2 - 1) {
+                            txt += "'" + sanitize((String) annex.get(i * 2)) + "'";
+                            txt2 += "'" + sanitize((String) annex.get(i * 2 + 1)) + "'";
+                        } else {
+                            txt += "'" + sanitize((String) annex.get(i * 2)) + "', ";
+                            txt2 += "'" + sanitize((String) annex.get(i * 2 + 1)) + "', ";
+                        }
+                    }
+                    ArrayList<String> returned = new ArrayList<>();
+                    returned.add(txt);
+                    returned.add(txt2);
+                    return returned;
                 } else {
-                    txt += annex.get(i * 2) + ", ";
-                    txt2 += annex.get(i * 2 + 1) + ", ";
+                    return null;
                 }
+            } else{
+                return null;
             }
-            ArrayList<String> returned = new ArrayList<String>();
-            returned.add(txt);
-            returned.add(txt2);
-            return returned;
         } else {
             return null;
         }
+
+    }
+
+    // methode sanitize sql
+    public String sanitize(String str) {
+        return str.replaceAll("[^a-zA-Z0-9_]", "");
     }
 
     public void Afficher(String text) {
         if (id != -1) {
-            System.out.println("client " + count + "(" + id + ") : " + text);
+            System.out.println("client " + count + " (ID" + id + ") : " + text);
         } else {
-            System.out.println("client " + count + "(not connected) : " + text);
+            System.out.println("client " + count + " (not connected) : " + text);
         }
 
     }

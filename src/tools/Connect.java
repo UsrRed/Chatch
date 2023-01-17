@@ -24,10 +24,10 @@ public class Connect {
             throw new RuntimeException(e);
         }
         ArrayList<Object> message = new ArrayList<>();
-        message.add(nom_utilisateur);
-        message.add(password);
         if (exist) {
             // envoie du message "connection"
+            message.add(nom_utilisateur);
+            message.add(password);
             try {
                 send(Connection_Codes.CONNEXION, message);
             } catch (IOException ex) {
@@ -35,6 +35,10 @@ public class Connect {
             }
         } else {
             // envoie du message "CREATION_UTILISATEUR"
+            message.add("nom_utilisateur");
+            message.add(nom_utilisateur);
+            message.add("motdepasse");
+            message.add(password);
             // le mail
             message.add(data.get(0));
             // la description
@@ -69,4 +73,13 @@ public class Connect {
         }
     }
 
+    public void close() {
+        try {
+            writer.close();
+            out.close();
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

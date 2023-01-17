@@ -25,6 +25,7 @@ public class Interface_Connection extends JFrame {
 
     public JPanel cards = new JPanel(new CardLayout());
     public CardLayout cardLayout;
+    private Thread_Client client = null;
 
     public Interface_Connection() {
         super();
@@ -33,11 +34,11 @@ public class Interface_Connection extends JFrame {
         JLabel Co_title = new JLabel("Connexion");
         Co_title.setFont(new Font("Arial", Font.BOLD, 20));
         Co_title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel Co_login = new JLabel("Login");
+        JLabel Co_login = new JLabel("Pseudonyme");
         Co_login.setAlignmentX(Component.CENTER_ALIGNMENT);
         JTextField Co_login_text = new JTextField();
         Co_login_text.setMaximumSize(new Dimension(200, 20));
-        JLabel Co_password = new JLabel("Password");
+        JLabel Co_password = new JLabel("mot de passe");
         Co_password.setAlignmentX(Component.CENTER_ALIGNMENT);
         JPasswordField Co_password_text = new JPasswordField();
         Co_password_text.setMaximumSize(new Dimension(200, 20));
@@ -64,7 +65,7 @@ public class Interface_Connection extends JFrame {
         JLabel Cr_title = new JLabel("Création de compte");
         Cr_title.setFont(new Font("Arial", Font.BOLD, 20));
         Cr_title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel Cr_login = new JLabel("Login");
+        JLabel Cr_login = new JLabel("Pseudonyme");
         Cr_login.setAlignmentX(Component.CENTER_ALIGNMENT);
         JTextField Cr_login_text = new JTextField();
         Cr_login_text.setMaximumSize(new Dimension(200, 20));
@@ -110,7 +111,7 @@ public class Interface_Connection extends JFrame {
         Cr_button.add(Cr_button_connexion);
 
         setTitle("Chatch - Connection"); // définit le titre de la fenêtre
-        CardLayout cardLayout = (CardLayout) cards.getLayout();
+        cardLayout = (CardLayout) cards.getLayout();
         setLayout(cardLayout);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBackground(Color.decode("#FF0000")); // couleur du background
@@ -135,7 +136,10 @@ public class Interface_Connection extends JFrame {
         Co_button_connexion.addActionListener(e -> {
             System.out.println("Connexion");
             try {
-                Thread_Client client = new Thread_Client(PORT, ADDRESS, Co_login_text.getText(), Co_password_text.getText(), this, true, null);
+                if (client != null) {
+                    client.close();
+                }
+                client = new Thread_Client(PORT, ADDRESS, Co_login_text.getText(), Co_password_text.getText(), this, true, null);
                 client.start();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
@@ -157,10 +161,15 @@ public class Interface_Connection extends JFrame {
             System.out.println("Inscription");
             if (Cr_password_text.getText().equals(Cr_password_confirm_text.getText())) {
                 ArrayList<String> data = new ArrayList<>();
+                data.add("adresse_email");
                 data.add(Cr_mail_text.getText());
+                data.add("description_utilisateur");
                 data.add(Cr_description_text.getText());
                 try {
-                    Thread_Client client = new Thread_Client(PORT, ADDRESS, Cr_login_text.getText(), Cr_password_text.getText(), this, false, data);
+                    if (client != null) {
+                        client.close();
+                    }
+                    client = new Thread_Client(PORT, ADDRESS, Cr_login_text.getText(), Cr_password_text.getText(), this, false, data);
                     client.start();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);

@@ -25,17 +25,6 @@ public class BDD_Query {
     }
 
     /**
-     * Constructeur de la Serveur.BDD_Query
-     *
-     * @param BDD   Base de donnée utilisée de type Serveur.Database
-     * @param query la commande SQL a executer
-     */
-    public BDD_Query(Database BDD, String query) {
-        this.BDD = BDD;
-        setQueryAsk(query);
-    }
-
-    /**
      * /!\ Ne retourne rien, l'enregistre dans l'objet
      *
      * @param query la commande SQL a executer

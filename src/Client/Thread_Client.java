@@ -1,6 +1,7 @@
 package Client;
 
 import tools.Connect;
+import tools.Connection_Codes;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -21,18 +22,21 @@ public class Thread_Client extends Thread {
     }
 
     public void run() {
-        while (true) {
-            System.out.println("Attente Serveur");
-            try {
-                socket = server.accept();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            System.out.println("Serveur connecté");
-            Traitement_serveur t1 = new Traitement_serveur(socket, fen);
-            t1.start();
-            System.out.println("Le serveur répond !");
+        System.out.println("Attente Serveur");
+        try {
+            socket = server.accept();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        System.out.println("Serveur connecté");
+        Traitement_serveur t1 = new Traitement_serveur(socket, fen);
+        t1.start();
+        System.out.println("Le serveur répond !");
     }
 
+    public void close() throws IOException {
+        connexion.send(Connection_Codes.DECONNEXION);
+        connexion.close();
+        server.close();
+    }
 }

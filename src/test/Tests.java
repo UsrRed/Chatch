@@ -29,14 +29,6 @@ class Tests {
             e.printStackTrace();
         }
 
-        // Requête BDD "simplifiée"
-        BDD_Query TheQuery = new BDD_Query(data, "SELECT * FROM utilisateur;");
-        System.out.println();
-        // réutilisable à volonté
-        TheQuery.setQueryAsk("SELECT * FROM message;");
-        System.out.println(TheQuery);
-        System.out.println("TEST");
-
 
         // Compte le nombre de discussion de l'utilisateur u (ensuite affichera les discussions)
         int u = 1;
