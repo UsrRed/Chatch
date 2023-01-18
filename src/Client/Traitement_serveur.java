@@ -55,7 +55,11 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case CONNEXION_KO:
                                 System.out.println("Connexion KO");
-                                fen.error("Connection échouée !");
+                                if (annex != null) {
+                                    System.out.println(annex.get(0));
+                                } else{
+                                    fen.error("Connection échouée !");
+                                }
                                 break;
                             case DECONNEXION_OK:
                                 System.out.println("Deconnexion OK");
@@ -120,11 +124,17 @@ public class Traitement_serveur extends Thread {
                             case CREATION_UTILISATEUR_OK:
                                 System.out.println("Creation utilisateur OK");
                                 fen.cardLayout.show(fen.cards, "Connexion");
-                                fen.success("Inscription réussie !\nVous pouvez maintenant vous connecter.");
+                                if (annex != null){
+                                    fen.success(annex.get(0).toString());
+                                }
                                 break;
                             case CREATION_UTILISATEUR_KO:
                                 System.out.println("Creation utilisateur KO");
-                                fen.error("Inscription échouée !\nVeuillez réessayer.");
+                                if (annex != null){
+                                    fen.error(annex.get(0).toString());
+                                } else {
+                                    fen.error("Erreur lors de la création de l'utilisateur");
+                                }
                                 break;
                             case SUPPRESSION_UTILISATEUR_OK:
                                 System.out.println("Suppression utilisateur OK");

@@ -65,7 +65,7 @@ public class Traitement_client extends Thread {
                         for (int i = 0; i < annex.size(); i++) {
                             if (annex.get(i) instanceof String) {
                                 // sanitize les réponses utilisateur
-                                annex.set(i, Objects.requireNonNull(annex.get(i)).toString().replaceAll("[^a-zA-Z0-9_]", ""));
+                                annex.set(i, Objects.requireNonNull(annex.get(i)).toString().replaceAll("[^a-zA-Z0-9_@.]", ""));
                                 // ajouter des ' ' autour des Strings
                                 if (!annex.get(i).toString().equals("")) {
                                     annex.set(i, "'" + annex.get(i) + "'");
@@ -247,12 +247,12 @@ public class Traitement_client extends Thread {
                             Afficher("Creation utilisateur");
                             if (extract != null) {
                                 // On vérifie que l'utilisateur n'existe pas déjà
-                                query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur = '" + annex.get(1) + "';");
-                                if (query.getQueryResult().size()>0){
-                                    System.out.println("Extraction2 : \n" + extract.get(0) + "\n" + extract.get(1));
-                                    // Impossible de comprendre pourquoi la syntax sql est détruite !
-                                    res = query.setQueryExecute("INSERT INTO utilisateur (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
-                                    if (res) {
+                                query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur = " + annex.get(1) + ";");
+                                if (query.getQueryResult().size()==0){
+                                    Afficher("Extraction2 : \n" + extract.get(0) + "\n" + extract.get(1));
+                                    query.setQueryExecute("INSERT INTO utilisateur (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
+                                    query.setQueryAsk("SELECT * FROM utilisateur WHERE " + Search(annex) + ";");
+                                    if (query.getQueryResult().size() != 0) {
                                         client.send(Connection_Codes.CREATION_UTILISATEUR_OK);
                                     } else {
                                         ArrayList<Object> error = new ArrayList<>();
@@ -300,10 +300,10 @@ public class Traitement_client extends Thread {
                     String txt2 = "";
                     for (int i = 0; i < annex.size() / 2; i++) {
                         if (i == annex.size() / 2 - 1) {
-                            txt += "'" + sanitize((String) annex.get(i * 2)) + "'";
+                            txt += sanitize((String) annex.get(i * 2));
                             txt2 += "'" + sanitize((String) annex.get(i * 2 + 1)) + "'";
                         } else {
-                            txt += "'" + sanitize((String) annex.get(i * 2)) + "', ";
+                            txt += sanitize((String) annex.get(i * 2)) + ", ";
                             txt2 += "'" + sanitize((String) annex.get(i * 2 + 1)) + "', ";
                         }
                     }
@@ -322,10 +322,33 @@ public class Traitement_client extends Thread {
         }
 
     }
+    public String Search(ArrayList<Object> annex){
+        if (annex != null) {
+            if(annex.stream().allMatch(String.class::isInstance)){
+                if (annex.size() % 2 == 0) {
+                    String txt = "";
+                    for (int i = 0; i < annex.size() / 2; i++) {
+                        if (i == annex.size() / 2 - 1) {
+                            txt += sanitize((String) annex.get(i * 2)) + " = '" + sanitize((String) annex.get(i * 2 + 1)) + "'";
+                        } else {
+                            txt += sanitize((String) annex.get(i * 2)) + " = '" + sanitize((String) annex.get(i * 2 + 1)) + "' AND ";
+                        }
+                    }
+                    return txt;
+                } else {
+                    return null;
+                }
+            } else{
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
     // methode sanitize sql
     public String sanitize(String str) {
-        return str.replaceAll("[^a-zA-Z0-9_]", "");
+        return str.replaceAll("[^a-zA-Z0-9_@.]", "");
     }
 
     public void Afficher(String text) {
