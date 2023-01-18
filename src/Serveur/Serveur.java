@@ -1,8 +1,11 @@
 package Serveur;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Properties;
 
 public class Serveur {
 
@@ -10,8 +13,22 @@ public class Serveur {
     private ServerSocket server = null;
     private Socket socket = null;
 
-    public Serveur() throws IOException, ClassNotFoundException {
-        Database data = new Database("10.195.25.15", "3306", "22104409t", "sae302");
+    public Serveur() throws IOException {
+        // Connection a la Database avec le fichier properties
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream("src/Serveur/properties/configuration.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // get the settings
+        String host = properties.getProperty("db_host");
+        String user = properties.getProperty("db_user");
+        String pwd = properties.getProperty("db_pwd");
+        String dbname = properties.getProperty("db_name");
+        String port = properties.getProperty("db_port");
+
+        Database data = new Database(host, port, user, pwd, dbname);
         data.connect();
 
         server = new ServerSocket(PORT);

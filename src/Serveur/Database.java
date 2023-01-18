@@ -3,6 +3,7 @@ package Serveur;
 import java.sql.*;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class Database {
     protected String ip;
@@ -10,6 +11,7 @@ public class Database {
     protected String identifiant;
     protected String password;
     protected Connection conn = null;
+    protected String name;
 
     /**
      * Crée l'objet BDD
@@ -19,12 +21,13 @@ public class Database {
      * @param identifiant identifiant en String
      * @param password    password de connection BDD en String
      */
-    public Database(String ip, String port, String identifiant, String password) {
+    public Database(String ip, String port, String identifiant, String password, String name) {
         // TODO Connexion with properties file
         this.ip = ip;
         this.port = port;
         this.identifiant = identifiant;
         this.password = password;
+        this.name = name;
     }
 
     /**
@@ -65,11 +68,10 @@ public class Database {
     public void connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://" + ip + ":" + port + "/" + identifiant + "", identifiant, password);
+            conn = DriverManager.getConnection("jdbc:mysql://" + ip + ":" + port + "/" + name + "", identifiant, password);
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
