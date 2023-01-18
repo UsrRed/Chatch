@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Interface extends JFrame { // la classe Cadre1 hérite de la classe des fenêtres Frame
-    protected Chat frame_chat = new Chat();
-    protected Menu_class frame_menu = new Menu_class();
+    protected Chat frame_chat = new Chat(this);
+    protected Menu_class frame_menu = new Menu_class(this);
 
     public Interface() {
         super();
@@ -41,12 +41,24 @@ public class Interface extends JFrame { // la classe Cadre1 hérite de la classe
 
     }
 
-    public void reload(ArrayList listChan, ArrayList messages) {
+    public int getID_current_chat() {
+        return frame_menu.getID();
+    }
+    public void setDiscussions(ArrayList<Object> listChan) {
         frame_menu.reloadChannels(listChan);
-        frame_chat.setMessages(messages, frame_menu.getselected());
+    }
+    public void setMessages(ArrayList<Object> messages) {
+        frame_chat.setMessages(messages);
+    }
+    public void addMessage(ArrayList<Object> message) {
+        frame_chat.addMessage(message);
     }
 
-    public void reload_msg(ArrayList messages) {
-        frame_chat.setMessages(messages);
+    public void error(String message) {
+        JOptionPane.showMessageDialog(this, message, "Erreur", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void success(String message) {
+        JOptionPane.showMessageDialog(this, message, "Succès", JOptionPane.INFORMATION_MESSAGE);
     }
 }

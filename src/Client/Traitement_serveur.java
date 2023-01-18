@@ -52,6 +52,7 @@ public class Traitement_serveur extends Thread {
                                 System.out.println("Connexion OK");
                                 client = new Interface();
                                 fen.dispose();
+                                Thread_Client.connexion.send(Connection_Codes.RECUPERATION_DISCUSSIONS);
                                 break;
                             case CONNEXION_KO:
                                 System.out.println("Connexion KO");
@@ -87,9 +88,11 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case ENVOI_MESSAGE_OK:
                                 System.out.println("Envoi message OK");
+                                client.addMessage(annex);
                                 break;
                             case ENVOI_MESSAGE_KO:
                                 System.out.println("Envoi message KO");
+                                client.error(annex.get(0).toString());
                                 break;
                             case SUPPRESSION_MESSAGE_OK:
                                 System.out.println("Suppression message OK");
@@ -150,21 +153,25 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case RECUPERATION_MESSAGES_OK:
                                 System.out.println("Recuperation messages OK");
+                                client.setMessages(annex);
                                 break;
                             case RECUPERATION_MESSAGES_KO:
                                 System.out.println("Recuperation messages KO");
                                 break;
                             case RECUPERATION_DISCUSSIONS_OK:
                                 System.out.println("Recuperation discussions OK");
+                                client.setDiscussions(annex);
                                 break;
                             case RECUPERATION_DISCUSSIONS_KO:
                                 System.out.println("Recuperation discussions KO");
+                                client.error("Erreur lors de la récupération des discussions");
                                 break;
                             case RECUPERATION_UTILISATEURS_OK:
                                 System.out.println("Recuperation utilisateur OK");
                                 break;
                             case RECUPERATION_UTILISATEURS_KO:
                                 System.out.println("Recuperation utilisateur KO");
+                                client.error(annex.get(0).toString());
                                 break;
                             default:
                                 System.out.println("Code inconnu");

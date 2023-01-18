@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -158,11 +159,13 @@ public class Traitement_client extends Thread {
                                 case ENVOI_MESSAGE:
                                     Afficher("Envoi message");
                                     if (extract != null) {
+                                        Timestamp now = new Timestamp(System.currentTimeMillis());
                                         // voir pour insérer l'objet message et l'id de l'utilisateur (auto)
-                                        query.setQueryExecute("INSERT INTO message (" + extract.get(0) + ") VALUES(" + extract.get(1) + ");");
-                                        query.setQueryAsk("SELECT id_message FROM message WHERE " + Search(annex) + ";");
+                                        query.setQueryExecute("INSERT INTO message (id_utilisateur, date_message, " + extract.get(0) + ") VALUES(" + id + ", " + now + ", " + extract.get(1) + ");");
+                                        query.setQueryAsk("SELECT id_message FROM message WHERE date_message=" + now + " AND id_utilisateur=" + id + " AND " + Search(annex) + ";");
                                         if (query.getQueryResult().size() > 0) {
-                                            client.send(Connection_Codes.ENVOI_MESSAGE_OK);
+                                            ArrayList<Object> result = query.getQueryResult();
+                                            client.send(Connection_Codes.ENVOI_MESSAGE_OK, result);
                                         } else {
                                             ArrayList<Object> error = new ArrayList<>();
                                             error.add("Erreur lors de l'envoi du message");
@@ -252,15 +255,10 @@ public class Traitement_client extends Thread {
                                     break;
                                 case RECUPERATION_DISCUSSIONS:
                                     Afficher("Recuperation discussions");
-                                    query.setQueryAsk("SELECT * FROM discussion d, groupe_discussion g WHERE g.id_utilisateur = " + id + " AND g.id_discussion=d.id_discussion;");
+                                    query.setQueryAsk("SELECT d.nom_discussion, d.id_discussion, d.photo_discussion FROM discussion d, groupe_discussion g WHERE g.id_utilisateur = " + id + " AND g.id_discussion=d.id_discussion;");
                                     ArrayList<Object> discussions = query.getQueryResult();
-                                    if (discussions.size() > 0) {
-                                        client.send(Connection_Codes.RECUPERATION_DISCUSSIONS_OK, discussions);
-                                    } else {
-                                        ArrayList<Object> error = new ArrayList<>();
-                                        error.add("Erreur lors de la récupération des discussions");
-                                        client.send(Connection_Codes.RECUPERATION_DISCUSSIONS_KO, error);
-                                    }
+                                    Afficher(discussions.toString());
+                                    client.send(Connection_Codes.RECUPERATION_DISCUSSIONS_OK, discussions);
                                     break;
                                 case RECUPERATION_UTILISATEURS:
                                     Afficher("Recuperation utilisateurs");
@@ -291,7 +289,7 @@ public class Traitement_client extends Thread {
                             if (extract != null) {
                                 // On vérifie que l'utilisateur n'existe pas déjà
                                 query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur = " + annex.get(1) + ";");
-                                if (query.getQueryResult().size()==0){
+                                if (query.getQueryResult().size() == 0) {
                                     query.setQueryExecute("INSERT INTO utilisateur (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
                                     query.setQueryAsk("SELECT * FROM utilisateur WHERE " + Search(annex) + ";");
                                     if (query.getQueryResult().size() != 0) {
@@ -338,7 +336,7 @@ public class Traitement_client extends Thread {
 
     public ArrayList<String> Extraction(ArrayList<Object> annex) {
         if (annex != null) {
-            if(annex.stream().allMatch(String.class::isInstance)){
+            if (annex.stream().allMatch(String.class::isInstance)) {
                 if (annex.size() % 2 == 0) {
                     String txt = "";
                     String txt2 = "";
@@ -358,7 +356,7 @@ public class Traitement_client extends Thread {
                 } else {
                     return null;
                 }
-            } else{
+            } else {
                 return null;
             }
         } else {
@@ -366,9 +364,10 @@ public class Traitement_client extends Thread {
         }
 
     }
-    public String Search(ArrayList<Object> annex){
+
+    public String Search(ArrayList<Object> annex) {
         if (annex != null) {
-            if(annex.stream().allMatch(String.class::isInstance)){
+            if (annex.stream().allMatch(String.class::isInstance)) {
                 if (annex.size() % 2 == 0) {
                     String txt = "";
                     for (int i = 0; i < annex.size() / 2; i++) {
@@ -382,7 +381,7 @@ public class Traitement_client extends Thread {
                 } else {
                     return null;
                 }
-            } else{
+            } else {
                 return null;
             }
         } else {

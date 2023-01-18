@@ -11,6 +11,7 @@ public class Message implements Serializable {
     protected Object contenu; // varchar 1000 avec soit text, soit image etc
     protected Date date; // Date du message
     protected int type; // type de message (img/text/autre) 1 : text, 2 : image, 3 : autre
+    protected String nom_utilisateur; // nom de l'utilisateur qui a envoyé le message
 
     public Message(ArrayList messages_request) {
         this.id = (int) messages_request.get(0);
@@ -19,32 +20,20 @@ public class Message implements Serializable {
         this.contenu = messages_request.get(3);
         this.date = (Date) messages_request.get(4);
         this.type = (int) messages_request.get(5);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getId_discussion() {
-        return id_discussion;
-    }
-
-    public int getId_utilisateur() {
-        return id_utilisateur;
+        this.nom_utilisateur = (String) messages_request.get(6);
     }
 
     public Object getContenu() {
         return contenu;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
     public int getType() {
         return type;
     }
 
+    public String getNom() {
+        return nom_utilisateur;
+    }
     @Override
     public String toString() {
         return "tools.Message{" +

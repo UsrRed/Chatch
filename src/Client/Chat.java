@@ -11,8 +11,11 @@ import tools.Connection_Codes;
 
 public class Chat extends JPanel {
     private JPanel messages_frame = new JPanel();
+    private Interface parent;
 
-    public Chat() {
+    public Chat(Interface parent) {
+        super();
+        this.parent = parent;
         JButton reload = new JButton("🔄");
 
         messages_frame.setLayout(new BoxLayout(messages_frame, BoxLayout.Y_AXIS));
@@ -37,9 +40,16 @@ public class Chat extends JPanel {
         valid_entry.addActionListener(e -> {
             // récupère le texte de data_entry
             String data = data_entry.getText();
+            // récupère le channel actuel
+            int channel = parent.getID_current_chat();
             // envoie le message
             ArrayList<Object> message = new ArrayList<>();
+            message.add("id_discussion");
+            message.add(channel);
+            message.add("contenu");
             message.add(data);
+            message.add("type_message");
+            message.add(1);
             try {
                 Thread_Client.connexion.send(Connection_Codes.ENVOI_MESSAGE, message);
             } catch (IOException ex) {
@@ -56,29 +66,24 @@ public class Chat extends JPanel {
 
     }
 
-    public void setMessages(ArrayList messages_request, Menu_Item channel) {
-        for (Object msg : messages_request) {
-            JPanel box = new JPanel();
+    public void setMessages(ArrayList messages) {
+        for (Object msg : messages) {
             // crée l'objet message
             Message message = new Message((ArrayList) msg);
             if (message.getType() == 1) { // Message string classique
-                if (message.getId_discussion() != channel.getId_discussion()) {
-                    box.add(new JLabel((String) message.getContenu(), JLabel.LEFT));
+                if (message.getNom().equals(Thread_Client.connexion.getNom_utilisateur())) {
+                    messages_frame.add(new JLabel("Moi : " + message.getContenu(), JLabel.RIGHT));
+                } else {
+                    messages_frame.add(new JLabel(message.getNom() + " : " + message.getContenu(), JLabel.LEFT));
                 }
             }
-            messages_frame.add(box);
         }
     }
-
-    public void setMessages(ArrayList messages_request_sorted) {
-        for (Object msg : messages_request_sorted) {
-            JPanel box = new JPanel();
-            // crée l'objet message
-            Message message = new Message((ArrayList) msg);
-            if (message.getType() == 1) { // Message string classique
-                box.add(new JLabel((String) message.getContenu(), JLabel.LEFT));
-            }
-            messages_frame.add(box);
+    public void addMessage(ArrayList<Object> message) {
+        // crée l'objet message
+        Message msg = new Message((ArrayList) message.get(0));
+        if (msg.getType() == 1) { // Message string classique
+            messages_frame.add(new JLabel((String) msg.getContenu(), JLabel.RIGHT));
         }
     }
 }
