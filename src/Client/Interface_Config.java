@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class Interface_Config extends JFrame {
 
-    public Interface_Config(ArrayList listChan) {
+    public Interface_Config() {
         super();
         addWindowListener(new WindowAdapter() { // fermeture de la fenêtre
             public void windowClosing(WindowEvent e) {
@@ -22,14 +22,6 @@ public class Interface_Config extends JFrame {
         setForeground(Color.black); // couleur du texte
         setSize(1000, 1000); // définit la taille de la fenêtre
         setVisible(true);
-    }
-
-    public Interface_Config() {
-        new Interface_Config(new ArrayList());
-
-        JTextField jtf = new JTextField();
-        String txt = jtf.getText();
-        JTextField txte = new JTextField(txt);
-
+        setLocationRelativeTo(null); // centre la fenêtre
     }
 }

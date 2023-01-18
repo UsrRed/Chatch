@@ -3,6 +3,7 @@ package Client;
 import tools.Message;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -12,21 +13,27 @@ public class Chat extends JPanel {
     private JPanel messages_frame = new JPanel();
 
     public Chat() {
+        JButton reload = new JButton("🔄");
+
+        messages_frame.setLayout(new BoxLayout(messages_frame, BoxLayout.Y_AXIS));
+        JScrollPane scroll = new JScrollPane(messages_frame);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setPreferredSize(new Dimension(400, 400));
+        scroll.setMaximumSize(new Dimension(400, 400));
+        scroll.setMinimumSize(new Dimension(400, 400));
+        add(scroll);
+
         JPanel entry = new JPanel();
         JTextField data_entry = new JTextField();
-        data_entry.setSize(60, 20);
-        JButton valid_entry = new JButton("envoyer >>>");
+        data_entry.setMaximumSize(new Dimension(500, 25));
+        JButton valid_entry = new JButton("Envoyer >>>");
 
         entry.add(data_entry);
         entry.add(valid_entry);
         add(entry);
 
-        // better view
-        /*
-        entry.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        messages.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        */
+
         valid_entry.addActionListener(e -> {
             // récupère le texte de data_entry
             String data = data_entry.getText();

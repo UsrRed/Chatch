@@ -103,24 +103,6 @@ public class Traitement_serveur extends Thread {
                             case MODIFICATION_MESSAGE_KO:
                                 System.out.println("Modification message KO");
                                 break;
-                            case CREATION_GROUPE_OK:
-                                System.out.println("Creation groupe OK");
-                                break;
-                            case CREATION_GROUPE_KO:
-                                System.out.println("Creation groupe KO");
-                                break;
-                            case SUPPRESSION_GROUPE_OK:
-                                System.out.println("Suppression groupe OK");
-                                break;
-                            case SUPPRESSION_GROUPE_KO:
-                                System.out.println("Suppression groupe KO");
-                                break;
-                            case MODIFICATION_GROUPE_OK:
-                                System.out.println("Modification groupe OK");
-                                break;
-                            case MODIFICATION_GROUPE_KO:
-                                System.out.println("Modification groupe KO");
-                                break;
                             case CREATION_UTILISATEUR_OK:
                                 System.out.println("Creation utilisateur OK");
                                 fen.cardLayout.show(fen.cards, "Connexion");
@@ -148,23 +130,41 @@ public class Traitement_serveur extends Thread {
                             case MODIFICATION_UTILISATEUR_KO:
                                 System.out.println("Modification utilisateur KO");
                                 break;
-                            case CREATION_ADMIN_GROUPE_OK:
+                            case CREATION_ADMIN_DISCUSSION_OK:
                                 System.out.println("Creation admin groupe OK");
                                 break;
-                            case CREATION_ADMIN_GROUPE_KO:
+                            case CREATION_ADMIN_DISCUSSION_KO:
                                 System.out.println("Creation admin groupe KO");
                                 break;
-                            case SUPPRESSION_ADMIN_GROUPE_OK:
+                            case SUPPRESSION_ADMIN_DISCUSSION_OK:
                                 System.out.println("Suppression admin groupe OK");
                                 break;
-                            case SUPPRESSION_ADMIN_GROUPE_KO:
+                            case SUPPRESSION_ADMIN_DISCUSSION_KO:
                                 System.out.println("Suppression admin groupe KO");
                                 break;
-                            case MODIFICATION_ADMIN_GROUPE_OK:
+                            case MODIFICATION_ADMIN_DISCUSSION_OK:
                                 System.out.println("Modification admin groupe OK");
                                 break;
-                            case MODIFICATION_ADMIN_GROUPE_KO:
+                            case MODIFICATION_ADMIN_DISCUSSION_KO:
                                 System.out.println("Modification admin groupe KO");
+                                break;
+                            case RECUPERATION_MESSAGES_OK:
+                                System.out.println("Recuperation messages OK");
+                                break;
+                            case RECUPERATION_MESSAGES_KO:
+                                System.out.println("Recuperation messages KO");
+                                break;
+                            case RECUPERATION_DISCUSSIONS_OK:
+                                System.out.println("Recuperation discussions OK");
+                                break;
+                            case RECUPERATION_DISCUSSIONS_KO:
+                                System.out.println("Recuperation discussions KO");
+                                break;
+                            case RECUPERATION_UTILISATEURS_OK:
+                                System.out.println("Recuperation utilisateur OK");
+                                break;
+                            case RECUPERATION_UTILISATEURS_KO:
+                                System.out.println("Recuperation utilisateur KO");
                                 break;
                             default:
                                 System.out.println("Code inconnu");

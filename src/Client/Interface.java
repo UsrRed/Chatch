@@ -36,13 +36,13 @@ public class Interface extends JFrame { // la classe Cadre1 hérite de la classe
         this.add(frame_chat, BorderLayout.CENTER);
         this.add(frame_menu, BorderLayout.NORTH);
         show();
-        setSize(1000, 1000); // définit la taille de la fenêtre
+        setSize(1280, 720); // définit la taille de la fenêtre
         setLocationRelativeTo(null); // centre la fenêtre
 
     }
 
     public void reload(ArrayList listChan, ArrayList messages) {
-        frame_menu.setChannels(listChan);
+        frame_menu.reloadChannels(listChan);
         frame_chat.setMessages(messages, frame_menu.getselected());
     }
 
