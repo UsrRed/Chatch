@@ -84,6 +84,7 @@ public class Connect {
             throw new RuntimeException(e);
         }
     }
+
     public String getNom_utilisateur() {
         return nom_utilisateur;
     }

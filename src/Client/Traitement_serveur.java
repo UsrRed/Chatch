@@ -80,6 +80,11 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case CREATION_DISCUSSION_KO:
                                 System.out.println("Creation discussion KO");
+                                if (annex != null) {
+                                    client.error((String) annex.get(0));
+                                } else{
+                                    client.error("Création de discussion échouée !");
+                                }
                                 break;
                             case SUPPRESSION_DISCUSSION_OK:
                                 System.out.println("Suppression discussion OK");

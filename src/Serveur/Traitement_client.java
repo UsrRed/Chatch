@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -67,9 +66,9 @@ public class Traitement_client extends Thread {
                             if (annex.get(i) instanceof String) {
                                 // sanitize les réponses utilisateur
                                 annex.set(i, Objects.requireNonNull(annex.get(i)).toString().replaceAll("[^a-zA-Z0-9_@.]", ""));
-                                }
                             }
                         }
+                    }
                     try {
                         Afficher("Message reçu : code{" + code + "} annex{" + annex + "} extract{" + extract + "}");
                         // trie des différents codes
@@ -90,34 +89,39 @@ public class Traitement_client extends Thread {
                                 case CONNEXION:
                                     break;
                                 case CREATION_DISCUSSION:
-                                    if (extract != null) {
-                                        query.setQueryExecute("INSERT INTO discussion (" + extract.get(0) + ") VALUES(" + extract.get(1) + ");");
-                                        query.setQueryAsk("SELECT id_discussion FROM discussion WHERE " + Search(annex) + ";");
-                                        ArrayList<Object> result = query.getQueryResult();
-                                        if (result.size() > 0) {
-                                            int tentatives = 0;
-                                            do {
-                                                // créer le groupe de discussion et ajoute l'utilisateur
-                                                query.setQueryExecute("INSERT INTO groupe_discussion (id_utilisateur, id_discussion) VALUES(" + id + ", " + result.get(0) + ");");
-                                                query.setQueryAsk("SELECT id_groupe FROM groupe_discussion WHERE id_utilisateur=" + id + " AND id_discussion=" + result.get(0) + ";");
-                                                tentatives++;
-                                            } while (query.getQueryResult().size() == 0 && tentatives < 10);
-                                            if (query.getQueryResult().size() > 0) {
-                                                client.send(Connection_Codes.CREATION_DISCUSSION_OK);
+                                    if (annex != null) {
+                                        query.setQueryAsk("SELECT id_discussion FROM discussion WHERE nom_discussion=\"" + annex.get(0) + "\";");
+                                        if (query.getQueryResult().size() == 0) {
+                                            query.setQueryExecute("INSERT INTO discussion (nom_discussion) VALUES(\"" + annex.get(0) + "\");");
+                                            query.setQueryAsk("SELECT id_discussion FROM discussion WHERE nom_discussion=\"" + annex.get(0) + "\";");
+                                            ArrayList result = (ArrayList<Object>) query.getQueryResult().get(0);
+                                            if (result.size() > 0) {
+                                                int tentatives = 0;
+                                                do {
+                                                    // créer le groupe de discussion et ajoute l'utilisateur
+                                                    query.setQueryExecute("INSERT INTO groupe_discussion (id_utilisateur, id_discussion) VALUES(" + id + ", " + result.get(0) + ");");
+                                                    query.setQueryAsk("SELECT id_groupe FROM groupe_discussion WHERE id_utilisateur=" + id + " AND id_discussion=" + result.get(0) + ";");
+                                                    tentatives++;
+                                                } while (query.getQueryResult().size() == 0 && tentatives < 10);
+                                                System.out.println(query.getQueryResult());
+                                                if (query.getQueryResult().size() > 0) {
+                                                    client.send(Connection_Codes.CREATION_DISCUSSION_OK);
+                                                } else {
+                                                    client.send(Connection_Codes.CREATION_DISCUSSION_KO);
+                                                    query.setQueryExecute("DELETE FROM discussion WHERE id_discussion=" + result.get(0) + ";");
+                                                }
                                             } else {
-                                                client.send(Connection_Codes.CREATION_DISCUSSION_KO);
-                                                query.setQueryExecute("DELETE FROM discussion WHERE " + Search(annex) + ";");
+                                                ArrayList<Object> error = new ArrayList<>();
+                                                error.add("Erreur lors de la création de la discussion");
+                                                client.send(Connection_Codes.CREATION_DISCUSSION_KO, error);
                                             }
                                         } else {
                                             ArrayList<Object> error = new ArrayList<>();
-                                            error.add("Erreur lors de la création de la discussion");
+                                            error.add("La discussion existe déjà");
                                             client.send(Connection_Codes.CREATION_DISCUSSION_KO, error);
                                         }
-                                    } else {
-                                        ArrayList<Object> error = new ArrayList<>();
-                                        error.add("Erreur de format");
-                                        client.send(Connection_Codes.CREATION_DISCUSSION_KO, error);
                                     }
+
                                     break;
                                 case SUPPRESSION_DISCUSSION:
                                     query.setQueryExecute("DELETE FROM discussion WHERE id_discussion=" + annex.get(0) + ";");
@@ -131,7 +135,7 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case MODIFICATION_DISCUSSION:
-                                    if (extract != null) {
+                                    if (annex != null) {
                                         query.setQueryExecute("UPDATE FROM discussion SET colone=" + annex.get(0) + " WHERE id_discussion=" + annex.get(1) + ";");
                                         query.setQueryAsk("SELECT * FROM discussion WHERE " + Search(annex) + ";");
                                         if (query.getQueryResult().size() > 0) {
@@ -301,7 +305,25 @@ public class Traitement_client extends Thread {
                             client.send(Connection_Codes.CONNEXION_KO, sended);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        if (e.getMessage().contains("Connection reset")) {
+                            Afficher("Déconnecté (Connection reset)");
+                            break;
+                        } else if (e.getMessage().contains("Socket closed")) {
+                            Afficher("Déconnecté (socket closed)");
+                            break;
+                        } else if (e.getMessage().contains("Connection timed out")) {
+                            Afficher("Déconnecté (timed out)");
+                            break;
+                        } else if (e.getMessage().contains("Connection refused")) {
+                            Afficher("Déconnecté (refused)");
+                            break;
+                        } else if (e.getMessage().contains("Connection aborted")) {
+                            Afficher("Déconnecté (aborted)");
+                            break;
+                        } else {
+                            Afficher("Erreur inconnue : " + e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
                 }
             } while (!Objects.requireNonNull(message).getContenu().equals(Connection_Codes.DECONNEXION));

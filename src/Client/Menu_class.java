@@ -24,7 +24,7 @@ public class Menu_class extends JPanel {
         // transforme les items de channels en Object Channel
         for (Object channel : channels) {
             menuChannel.addItem(new Channel((String) ((ArrayList) channel).get(0), (int) ((ArrayList) channel).get(1), (String) ((ArrayList) channel).get(2)));
-            if(i == 0) {
+            if (i == 0) {
                 menuChannel.setSelectedIndex(0);
                 int id = (int) ((ArrayList) channel).get(1);
                 ArrayList<Object> data = new ArrayList<>();

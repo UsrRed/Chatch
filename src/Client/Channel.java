@@ -1,14 +1,11 @@
 package Client;
 
-import javax.swing.*;
-
-public class Channel extends JComboBox {
+public class Channel {
     protected int id;
     protected String nom;
     protected String photo = null;
 
     public Channel(String name, int id, String photo) {
-        super();
         this.id = id;
         this.nom = name;
         this.photo = photo;

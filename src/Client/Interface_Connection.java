@@ -6,7 +6,6 @@ import java.awt.event.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class Interface_Connection extends JFrame {
@@ -210,7 +209,7 @@ public class Interface_Connection extends JFrame {
         });
         Se_button_modifier.addActionListener(e -> {
             String temp_addr = Se_host_text.getText();
-            try{
+            try {
                 int temp_port = Integer.parseInt(Se_port_text.getText());
                 // si l'adresse ip et le port sont valides
                 if (temp_addr.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$") && temp_port > 0 && temp_port < 65536) {
@@ -225,7 +224,7 @@ public class Interface_Connection extends JFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "L'adresse IP ou le port n'est pas valide", "Erreur", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (NumberFormatException ex){
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Le port doit être un nombre", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -267,13 +266,13 @@ public class Interface_Connection extends JFrame {
         Se_port_text.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
                 // si le port est valide
-                try{
+                try {
                     int temp_port = Integer.parseInt(Se_port_text.getText());
                     if (temp_port < 0 || temp_port > 65536) {
                         // met en rouge le champ
                         Se_port_text.setBackground(Color.decode("#FF0000"));
                     }
-                } catch (NumberFormatException ex){
+                } catch (NumberFormatException ex) {
                     // met en rouge le champ
                     Se_port_text.setBackground(Color.decode("#FF0000"));
                 }

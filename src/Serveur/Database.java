@@ -2,8 +2,6 @@ package Serveur;
 
 import java.sql.*;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Properties;
 
 public class Database {
     protected String ip;
