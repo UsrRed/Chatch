@@ -4,8 +4,7 @@ import tools.Connection_Codes;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -178,6 +177,163 @@ public class Interface_Connection extends JFrame {
                 System.out.println("Les mots de passe ne correspondent pas");
             }
         });
+        // listener pour les touches
+        addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    dispose();
+                }
+            }
+        });
+        Connexion.addKeyListener(new KeyAdapter() {
+            // TODO : ne fonctionne pas
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // si la touche entrée est pressée
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    Co_button_connexion.doClick();
+                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    dispose();
+                } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    // effacer les champs
+                    Co_login_text.setText("");
+                    Co_password_text.setText("");
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    Co_button_inscription.doClick();
+                }
+            }
+        });
+        Inscription.addKeyListener(new KeyAdapter() {
+            // TODO : ne fonctionne pas
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // si la touche entrée est pressée
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    Cr_button_inscription.doClick();
+                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    dispose();
+                } else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    // effacer les champs
+                    Cr_login_text.setText("");
+                    Cr_password_text.setText("");
+                    Cr_password_confirm_text.setText("");
+                    Cr_mail_text.setText("");
+                    Cr_description_text.setText("");
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    Cr_button_connexion.doClick();
+                }
+            }
+        });
+        // si une un JTextField perd le focus
+        Co_login_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                Co_login_text.setText(Co_login_text.getText().trim());
+            }
+        });
+        Co_password_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                Co_password_text.setText(Co_password_text.getText().trim());
+            }
+        });
+        Cr_login_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                Cr_login_text.setText(Cr_login_text.getText().trim());
+            }
+        });
+        Cr_password_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                Cr_password_text.setText(Cr_password_text.getText().trim());
+                // si le mot de passe est trop court
+                if (Cr_password_text.getText().length() < 8) {
+                    Cr_password_text.setBackground(Color.decode("#FF0000"));
+                    Cr_password_text.setToolTipText("Le mot de passe doit contenir au moins 8 caractères");
+                } else {
+                    Cr_password_text.setBackground(Color.decode("#FFFFFF"));
+                }
+            }
+        });
+        Cr_password_confirm_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                Cr_password_confirm_text.setText(Cr_password_confirm_text.getText().trim());
+                // si les mots de passe ne correspondent pas
+                if (!Cr_password_text.getText().equals(Cr_password_confirm_text.getText())) {
+                    Cr_password_confirm_text.setBackground(Color.decode("#FF0000"));
+                    Cr_password_confirm_text.setToolTipText("Les mots de passe ne correspondent pas");
+                } else {
+                    Cr_password_confirm_text.setBackground(Color.decode("#FFFFFF"));
+                }
+            }
+        });
+        Cr_mail_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                Cr_mail_text.setText(Cr_mail_text.getText().trim());
+                // si l'adresse mail n'est pas valide
+                if (!Cr_mail_text.getText().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                    Cr_mail_text.setBackground(Color.decode("#FF0000"));
+                    Cr_mail_text.setToolTipText("L'adresse mail n'est pas valide");
+                } else {
+                    Cr_mail_text.setBackground(Color.decode("#FFFFFF"));
+                }
+            }
+        });
+        Cr_description_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                Cr_description_text.setText(Cr_description_text.getText().trim());
+            }
+        });
+        // si une un JTextField a le focus
+        Co_login_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                Co_login_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+        Co_password_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                Co_password_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+        Cr_login_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                Cr_login_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+        Cr_password_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                Cr_password_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+        Cr_password_confirm_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                Cr_password_confirm_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+        Cr_mail_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                Cr_mail_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+        Cr_description_text.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                Cr_description_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+
+
+
     }
 
     public void error(String message) {

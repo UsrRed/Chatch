@@ -36,7 +36,7 @@ public class Chat extends JPanel {
         entry.add(valid_entry);
         add(entry);
 
-
+        // envoi de message
         valid_entry.addActionListener(e -> {
             // récupère le texte de data_entry
             String data = data_entry.getText();

@@ -45,7 +45,8 @@ public class Traitement_client extends Thread {
                 try {
                     message = (Connection_format) reader.readObject();
                 } catch (ClassNotFoundException | IOException e) {
-                    e.printStackTrace();
+                    Afficher(e.getMessage());
+                    break;
                 }
                 while (client == null) {
                     try {
@@ -315,7 +316,7 @@ public class Traitement_client extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("deconnexion");
+        Afficher("Déconnexion du serveur");
     }
 
     public ArrayList<String> Extraction(ArrayList<Object> annex) {
