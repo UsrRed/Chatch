@@ -62,25 +62,20 @@ public class Traitement_client extends Thread {
                     // initialisation des variables
                     Connection_Codes code = message.getContenu();
                     ArrayList<Object> annex = message.getAnnex();
+                    ArrayList<String> extract = Extraction(annex);
                     if (annex != null) {
                         for (int i = 0; i < annex.size(); i++) {
                             if (annex.get(i) instanceof String) {
                                 // sanitize les réponses utilisateur
                                 annex.set(i, Objects.requireNonNull(annex.get(i)).toString().replaceAll("[^a-zA-Z0-9_@.]", ""));
-                                // ajouter des ' ' autour des Strings
-                                if (!annex.get(i).toString().equals("")) {
-                                    annex.set(i, "'" + annex.get(i) + "'");
                                 }
                             }
                         }
-                    }
                     try {
-                        ArrayList<String> extract = Extraction(annex);
-
+                        Afficher("Message reçu : code{" + code + "} annex{" + annex + "} extract{" + extract + "}");
                         // trie des différents codes
                         if (code == Connection_Codes.CONNEXION) {
-                            Afficher("Connexion");
-                            query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur=" + annex.get(0) + " AND motdepasse=" + annex.get(1) + ";");
+                            query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur=\"" + annex.get(0) + "\" AND motdepasse=\"" + annex.get(1) + "\";");
                             ArrayList<Object> result = query.getQueryResult();
                             if (result.size() > 0) {
                                 client.send(Connection_Codes.CONNEXION_OK);
@@ -96,7 +91,6 @@ public class Traitement_client extends Thread {
                                 case CONNEXION:
                                     break;
                                 case CREATION_DISCUSSION:
-                                    Afficher("Creation discussion");
                                     if (extract != null) {
                                         query.setQueryExecute("INSERT INTO discussion (" + extract.get(0) + ") VALUES(" + extract.get(1) + ");");
                                         query.setQueryAsk("SELECT id_discussion FROM discussion WHERE " + Search(annex) + ";");
@@ -105,7 +99,7 @@ public class Traitement_client extends Thread {
                                             int tentatives = 0;
                                             do {
                                                 // créer le groupe de discussion et ajoute l'utilisateur
-                                                query.setQueryExecute("INSERT INTO groupe_discussion (id_utilisateur, id_discussion) VALUES(" + id + ", " + result.get(0) + " FROM discussion));");
+                                                query.setQueryExecute("INSERT INTO groupe_discussion (id_utilisateur, id_discussion) VALUES(" + id + ", " + result.get(0) + ");");
                                                 query.setQueryAsk("SELECT id_groupe FROM groupe_discussion WHERE id_utilisateur=" + id + " AND id_discussion=" + result.get(0) + ";");
                                                 tentatives++;
                                             } while (query.getQueryResult().size() == 0 && tentatives < 10);
@@ -127,9 +121,8 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case SUPPRESSION_DISCUSSION:
-                                    Afficher("Suppression discussion");
-                                    query.setQueryExecute("DELETE FROM discussion WHERE id_discussion = " + annex.get(0) + ";");
-                                    query.setQueryAsk("SELECT * FROM discussion WHERE id_discussion = " + annex.get(0) + ";");
+                                    query.setQueryExecute("DELETE FROM discussion WHERE id_discussion=" + annex.get(0) + ";");
+                                    query.setQueryAsk("SELECT * FROM discussion WHERE id_discussion=" + annex.get(0) + ";");
                                     if (query.getQueryResult().size() == 0) {
                                         client.send(Connection_Codes.SUPPRESSION_DISCUSSION_OK);
                                     } else {
@@ -139,9 +132,8 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case MODIFICATION_DISCUSSION:
-                                    Afficher("Modification discussion");
                                     if (extract != null) {
-                                        query.setQueryExecute("UPDATE FROM discussion SET colone = " + extract.get(0) + " WHERE id_discussion = " + extract.get(1) + ";");
+                                        query.setQueryExecute("UPDATE FROM discussion SET colone=" + annex.get(0) + " WHERE id_discussion=" + annex.get(1) + ";");
                                         query.setQueryAsk("SELECT * FROM discussion WHERE " + Search(annex) + ";");
                                         if (query.getQueryResult().size() > 0) {
                                             client.send(Connection_Codes.MODIFICATION_DISCUSSION_OK);
@@ -157,13 +149,17 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case ENVOI_MESSAGE:
-                                    Afficher("Envoi message");
                                     if (extract != null) {
                                         Timestamp now = new Timestamp(System.currentTimeMillis());
+                                        // get nom_utilisateur
+                                        query.setQueryAsk("SELECT nom_utilisateur FROM utilisateur WHERE id_utilisateur=" + id + ";");
+                                        ArrayList temp_result = (ArrayList) query.getQueryResult().get(0);
+                                        String nom_utilisateur = (String) temp_result.get(0);
                                         // voir pour insérer l'objet message et l'id de l'utilisateur (auto)
-                                        query.setQueryExecute("INSERT INTO message (id_utilisateur, date_message, " + extract.get(0) + ") VALUES(" + id + ", " + now + ", " + extract.get(1) + ");");
-                                        query.setQueryAsk("SELECT id_message FROM message WHERE date_message=" + now + " AND id_utilisateur=" + id + " AND " + Search(annex) + ";");
+                                        query.setQueryExecute("INSERT INTO message (id_utilisateur, nom_utilisateur, " + extract.get(0) + ") VALUES(" + id + ", \"" + nom_utilisateur + "\", " + extract.get(1) + ");");
+                                        query.setQueryAsk("SELECT * FROM message WHERE id_utilisateur=" + id + " AND nom_utilisateur=\"" + nom_utilisateur + "\" AND " + Search(annex) + ";");
                                         if (query.getQueryResult().size() > 0) {
+                                            System.out.println(query.getQueryResult());
                                             ArrayList<Object> result = query.getQueryResult();
                                             client.send(Connection_Codes.ENVOI_MESSAGE_OK, result);
                                         } else {
@@ -178,7 +174,6 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case SUPPRESSION_MESSAGE:
-                                    Afficher("Suppression message");
                                     query.setQueryExecute("DELETE FROM message WHERE id_utilisateur=" + id + " AND " + Search(annex) + ";");
                                     query.setQueryAsk("SELECT * FROM message WHERE id_utilisateur=" + id + " AND " + Search(annex) + ";");
                                     if (query.getQueryResult().size() == 0) {
@@ -190,9 +185,8 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case MODIFICATION_MESSAGE:
-                                    Afficher("Modification message");
-                                    query.setQueryExecute("UPDATE message SET contenu=" + annex.get(0) + " WHERE id_message = " + annex.get(1) + ";");
-                                    query.setQueryAsk("SELECT * FROM message WHERE id_message = " + annex.get(1) + ";");
+                                    query.setQueryExecute("UPDATE message SET contenu=\"" + annex.get(0) + "\" WHERE id_message=" + annex.get(1) + ";");
+                                    query.setQueryAsk("SELECT * FROM message WHERE id_message=" + annex.get(1) + ";");
                                     ArrayList<Object> result = query.getQueryResult();
                                     ArrayList<Object> header = query.getQueryHeader();
                                     if (result.size() > 0 && result.get(header.indexOf("contenu")).equals(annex.get(0))) {
@@ -204,9 +198,8 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case SUPPRESSION_UTILISATEUR:
-                                    Afficher("Suppression utilisateur");
-                                    query.setQueryExecute("DELETE FROM utilisateur WHERE id_utilisateur= " + id + ";");
-                                    query.setQueryAsk("SELECT * FROM utilisateur WHERE id_utilisateur= " + id + ";");
+                                    query.setQueryExecute("DELETE FROM utilisateur WHERE id_utilisateur=" + id + ";");
+                                    query.setQueryAsk("SELECT * FROM utilisateur WHERE id_utilisateur=" + id + ";");
                                     if (query.getQueryResult().size() == 0) {
                                         ArrayList<Object> success = new ArrayList<>();
                                         success.add("Utilisateur supprimé");
@@ -218,27 +211,22 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case MODIFICATION_UTILISATEUR:
-                                    Afficher("Modification utilisateur");
                                     //query.setQueryExecute("UPDATE utilisateur SET nom_de_colonne ="+ extract.get(0) +" WHERE id_utilisateur= "+ extract.get(1) +" ;");
                                     break;
                                 case CREATION_ADMIN_DISCUSSION:
-                                    Afficher("Creation admin groupe");
                                     //UPDATE groupe_discussion SET role=... WHERE id_utilisateur=... AND id_discussion=... ;
                                     break;
                                 case SUPPRESSION_ADMIN_DISCUSSION:
-                                    Afficher("Suppression admin groupe");
                                     //UPDATE groupe_discussion SET role= ... WHERE id_utilisateur= ... AND id_discussion= ... ;
                                     break;
                                 case MODIFICATION_ADMIN_DISCUSSION:
-                                    Afficher("Modification admin groupe");
                                     //UPDATE groupe_discussion SET role = ... WHERE id_utilisateur = ... AND id_discussion= ... ;
                                     break;
                                 case RECUPERATION_MESSAGES:
-                                    Afficher("Recuperation messages");
                                     // vérifier que l'utilisateur est bien dans la discussion
                                     query.setQueryAsk("SELECT * FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + " AND id_utilisateur=" + id + ";");
                                     if (query.getQueryResult().size() > 0) {
-                                        query.setQueryAsk("SELECT * FROM message WHERE id_discussion = " + annex.get(0) + ";");
+                                        query.setQueryAsk("SELECT * FROM message WHERE id_discussion=" + annex.get(0) + ";");
                                         ArrayList<Object> messages = query.getQueryResult();
                                         if (messages.size() > 0) {
                                             client.send(Connection_Codes.RECUPERATION_MESSAGES_OK, messages);
@@ -254,18 +242,15 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case RECUPERATION_DISCUSSIONS:
-                                    Afficher("Recuperation discussions");
-                                    query.setQueryAsk("SELECT d.nom_discussion, d.id_discussion, d.photo_discussion FROM discussion d, groupe_discussion g WHERE g.id_utilisateur = " + id + " AND g.id_discussion=d.id_discussion;");
+                                    query.setQueryAsk("SELECT d.nom_discussion, d.id_discussion, d.photo_discussion FROM discussion d, groupe_discussion g WHERE g.id_utilisateur=" + id + " AND g.id_discussion=d.id_discussion;");
                                     ArrayList<Object> discussions = query.getQueryResult();
-                                    Afficher(discussions.toString());
                                     client.send(Connection_Codes.RECUPERATION_DISCUSSIONS_OK, discussions);
                                     break;
                                 case RECUPERATION_UTILISATEURS:
-                                    Afficher("Recuperation utilisateurs");
                                     // vérifier que l'utilisateur est bien dans la discussion
                                     query.setQueryAsk("SELECT * FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + " AND id_utilisateur=" + id + ";");
                                     if (query.getQueryResult().size() > 0) {
-                                        query.setQueryAsk("SELECT u.nom_utilisateur, u.description_utilisateur, u.photo_utilisateur FROM utilisateur u, groupe_discussion g WHERE g.id_discussion = " + annex.get(0) + " AND g.id_utilisateur=u.id_utilisateur;");
+                                        query.setQueryAsk("SELECT u.nom_utilisateur, u.description_utilisateur, u.photo_utilisateur FROM utilisateur u, groupe_discussion g WHERE g.id_discussion=" + annex.get(0) + " AND g.id_utilisateur=u.id_utilisateur;");
                                         ArrayList<Object> utilisateurs = query.getQueryResult();
                                         if (utilisateurs.size() > 0) {
                                             client.send(Connection_Codes.RECUPERATION_UTILISATEURS_OK, utilisateurs);
@@ -285,10 +270,9 @@ public class Traitement_client extends Thread {
                                     break;
                             }
                         } else if (code == Connection_Codes.CREATION_UTILISATEUR) {
-                            Afficher("Creation utilisateur");
                             if (extract != null) {
                                 // On vérifie que l'utilisateur n'existe pas déjà
-                                query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur = " + annex.get(1) + ";");
+                                query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur = \"" + annex.get(1) + "\";");
                                 if (query.getQueryResult().size() == 0) {
                                     query.setQueryExecute("INSERT INTO utilisateur (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
                                     query.setQueryAsk("SELECT * FROM utilisateur WHERE " + Search(annex) + ";");
@@ -336,26 +320,30 @@ public class Traitement_client extends Thread {
 
     public ArrayList<String> Extraction(ArrayList<Object> annex) {
         if (annex != null) {
-            if (annex.stream().allMatch(String.class::isInstance)) {
-                if (annex.size() % 2 == 0) {
-                    String txt = "";
-                    String txt2 = "";
-                    for (int i = 0; i < annex.size() / 2; i++) {
-                        if (i == annex.size() / 2 - 1) {
-                            txt += sanitize((String) annex.get(i * 2));
-                            txt2 += "'" + sanitize((String) annex.get(i * 2 + 1)) + "'";
+            if (annex.size() % 2 == 0) {
+                String txt = "";
+                String txt2 = "";
+                for (int i = 0; i < annex.size() / 2; i++) {
+                    if (i == annex.size() / 2 - 1) {
+                        txt += sanitize(annex.get(i * 2).toString());
+                        if (annex.get(i * 2 + 1) instanceof String) {
+                            txt2 += "\"" + sanitize(annex.get(i * 2 + 1).toString()) + "\"";
                         } else {
-                            txt += sanitize((String) annex.get(i * 2)) + ", ";
-                            txt2 += "'" + sanitize((String) annex.get(i * 2 + 1)) + "', ";
+                            txt2 += sanitize(annex.get(i * 2 + 1).toString());
+                        }
+                    } else {
+                        txt += sanitize(annex.get(i * 2).toString()) + ", ";
+                        if (annex.get(i * 2 + 1) instanceof String) {
+                            txt2 += "\"" + sanitize(annex.get(i * 2 + 1).toString()) + "\", ";
+                        } else {
+                            txt2 += sanitize(annex.get(i * 2 + 1).toString()) + ", ";
                         }
                     }
-                    ArrayList<String> returned = new ArrayList<>();
-                    returned.add(txt);
-                    returned.add(txt2);
-                    return returned;
-                } else {
-                    return null;
                 }
+                ArrayList<String> returned = new ArrayList<>();
+                returned.add(txt);
+                returned.add(txt2);
+                return returned;
             } else {
                 return null;
             }
@@ -367,20 +355,24 @@ public class Traitement_client extends Thread {
 
     public String Search(ArrayList<Object> annex) {
         if (annex != null) {
-            if (annex.stream().allMatch(String.class::isInstance)) {
-                if (annex.size() % 2 == 0) {
-                    String txt = "";
-                    for (int i = 0; i < annex.size() / 2; i++) {
-                        if (i == annex.size() / 2 - 1) {
-                            txt += sanitize((String) annex.get(i * 2)) + " = '" + sanitize((String) annex.get(i * 2 + 1)) + "'";
+            if (annex.size() % 2 == 0) {
+                String txt = "";
+                for (int i = 0; i < annex.size() / 2; i++) {
+                    if (i == annex.size() / 2 - 1) {
+                        if (annex.get(i * 2 + 1) instanceof String) {
+                            txt += sanitize(annex.get(i * 2).toString()) + " = \"" + sanitize(annex.get(i * 2 + 1).toString()) + "\"";
                         } else {
-                            txt += sanitize((String) annex.get(i * 2)) + " = '" + sanitize((String) annex.get(i * 2 + 1)) + "' AND ";
+                            txt += sanitize(annex.get(i * 2).toString()) + " = " + sanitize(annex.get(i * 2 + 1).toString());
+                        }
+                    } else {
+                        if (annex.get(i * 2 + 1) instanceof String) {
+                            txt += sanitize(annex.get(i * 2).toString()) + " = \"" + sanitize(annex.get(i * 2 + 1).toString()) + "\" AND ";
+                        } else {
+                            txt += sanitize(annex.get(i * 2).toString()) + " = " + sanitize(annex.get(i * 2 + 1).toString()) + " AND ";
                         }
                     }
-                    return txt;
-                } else {
-                    return null;
                 }
+                return txt;
             } else {
                 return null;
             }

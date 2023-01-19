@@ -40,6 +40,8 @@ public class Chat extends JPanel {
         valid_entry.addActionListener(e -> {
             // récupère le texte de data_entry
             String data = data_entry.getText();
+            // récupère le nom_utilisateur
+            String nom_utilisateur = Thread_Client.connexion.getNom_utilisateur();
             // récupère le channel actuel
             int channel = parent.getID_current_chat();
             // envoie le message
@@ -67,6 +69,7 @@ public class Chat extends JPanel {
     }
 
     public void setMessages(ArrayList messages) {
+        messages_frame.removeAll();
         for (Object msg : messages) {
             // crée l'objet message
             Message message = new Message((ArrayList) msg);

@@ -36,13 +36,14 @@ public class Message implements Serializable {
     }
     @Override
     public String toString() {
-        return "tools.Message{" +
+        return "Message{" +
                 "id=" + id +
                 ", id_discussion=" + id_discussion +
                 ", id_utilisateur=" + id_utilisateur +
                 ", contenu=" + contenu +
                 ", date=" + date +
                 ", type=" + type +
+                ", nom_utilisateur='" + nom_utilisateur + '\'' +
                 '}';
     }
 

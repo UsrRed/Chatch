@@ -64,6 +64,10 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case DECONNEXION_OK:
                                 System.out.println("Deconnexion OK");
+                                client.dispose();
+                                Thread_Client.connexion.close();
+                                this.socket.close();
+                                new Interface_Connection();
                                 break;
                             case DECONNEXION_KO:
                                 System.out.println("Deconnexion KO");
@@ -123,6 +127,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case SUPPRESSION_UTILISATEUR_OK:
                                 System.out.println("Suppression utilisateur OK");
+                                Thread_Client.connexion.send(Connection_Codes.DECONNEXION);
                                 break;
                             case SUPPRESSION_UTILISATEUR_KO:
                                 System.out.println("Suppression utilisateur KO");
