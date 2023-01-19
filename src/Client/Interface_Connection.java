@@ -1,35 +1,29 @@
 package Client;
 
-import tools.Connection_Codes;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class Interface_Connection extends JFrame {
-    private static final int PORT = 2009; // socket port
-    private static final InetAddress ADDRESS; // socket host
-
-    static {
-        try {
-            ADDRESS = InetAddress.getByAddress(new byte[]{0, 0, 0, 0});
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    private final InetAddress host; // socket host
+    private final int port; // socket port
     public JPanel cards = new JPanel(new CardLayout());
     public CardLayout cardLayout;
     private Thread_Client client = null;
 
-    public Interface_Connection() {
+    public Interface_Connection(InetAddress host, int port) {
         super();
+        this.host = host;
+        this.port = port;
+
         JPanel Connexion = new JPanel();
         Connexion.setLayout(new BoxLayout(Connexion, BoxLayout.Y_AXIS));
+
         JLabel Co_title = new JLabel("Connexion");
         Co_title.setFont(new Font("Arial", Font.BOLD, 20));
         Co_title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -45,8 +39,10 @@ public class Interface_Connection extends JFrame {
 
 
         JPanel Co_button = new JPanel();
+        Co_button.setLayout(new BoxLayout(Co_button, BoxLayout.X_AXIS));
         JButton Co_button_connexion = new JButton("Se connecter");
         JButton Co_button_inscription = new JButton("S'inscrire -->");
+        JButton Co_button_Serveur = new JButton("Serveur -->");
 
         Connexion.add(Co_title);
         Connexion.add(Co_login);
@@ -57,6 +53,7 @@ public class Interface_Connection extends JFrame {
 
         Co_button.add(Co_button_connexion);
         Co_button.add(Co_button_inscription);
+        Co_button.add(Co_button_Serveur);
 
 
         JPanel Inscription = new JPanel();
@@ -82,7 +79,7 @@ public class Interface_Connection extends JFrame {
         Cr_mail.setAlignmentX(Component.CENTER_ALIGNMENT);
         JTextField Cr_mail_text = new JTextField();
         Cr_mail_text.setMaximumSize(new Dimension(200, 20));
-        //  Mettre une description au profile
+        //  Mettre une description au profil
         JLabel Cr_description = new JLabel("Description");
         Cr_description.setAlignmentX(Component.CENTER_ALIGNMENT);
         JTextField Cr_description_text = new JTextField();
@@ -109,6 +106,36 @@ public class Interface_Connection extends JFrame {
         Cr_button.add(Cr_button_inscription);
         Cr_button.add(Cr_button_connexion);
 
+        // page pour le changement de connection au serveur
+        JPanel Server = new JPanel();
+        Server.setLayout(new BoxLayout(Server, BoxLayout.Y_AXIS));
+        JLabel Se_title = new JLabel("Serveur");
+        Se_title.setFont(new Font("Arial", Font.BOLD, 20));
+        Se_title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel Se_host = new JLabel("Adresse IP");
+        Se_host.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JTextField Se_host_text = new JTextField(host.getHostAddress());
+        Se_host_text.setOpaque(false);
+        Se_host_text.setMaximumSize(new Dimension(200, 20));
+        JLabel Se_port = new JLabel("Port (default : 2009)");
+        Se_port.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JTextField Se_port_text = new JTextField(port + "");
+        Se_port_text.setOpaque(false);
+        Se_port_text.setMaximumSize(new Dimension(200, 20));
+        JPanel Se_button = new JPanel();
+        JButton Se_button_modifier = new JButton("Modifier");
+        JButton Se_button_retour = new JButton("Retour -->");
+
+        Server.add(Se_title);
+        Server.add(Se_host);
+        Server.add(Se_host_text);
+        Server.add(Se_port);
+        Server.add(Se_port_text);
+        Server.add(Se_button);
+
+        Se_button.add(Se_button_modifier);
+        Se_button.add(Se_button_retour);
+
         setTitle("Chatch - Connection"); // définit le titre de la fenêtre
         cardLayout = (CardLayout) cards.getLayout();
         setLayout(cardLayout);
@@ -119,6 +146,7 @@ public class Interface_Connection extends JFrame {
 
         cards.add(Connexion, "Connexion");
         cards.add(Inscription, "Inscription");
+        cards.add(Server, "Server");
         add(cards);
         cardLayout.show(cards, "Connexion");
         show();
@@ -133,12 +161,11 @@ public class Interface_Connection extends JFrame {
         });
         // menu Connexion
         Co_button_connexion.addActionListener(e -> {
-            System.out.println("Connexion");
             try {
                 if (client != null) {
                     client.close();
                 }
-                client = new Thread_Client(PORT, ADDRESS, Co_login_text.getText(), Co_password_text.getText(), this, true, null);
+                client = new Thread_Client(port, host, Co_login_text.getText(), Co_password_text.getText(), this, true, null);
                 client.start();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
@@ -147,17 +174,17 @@ public class Interface_Connection extends JFrame {
         });
         // Cache le panel Connexion et affiche le panel Inscription
         Co_button_inscription.addActionListener(e -> {
-            System.out.println("Inscription");
             cardLayout.show(cards, "Inscription");
+        });
+        Co_button_Serveur.addActionListener(e -> {
+            cardLayout.show(cards, "Server");
         });
         // menu Inscription
         // Cache le panel Inscription et affiche le panel Connexion
         Cr_button_connexion.addActionListener(e -> {
-            System.out.println("Connexion");
             cardLayout.show(cards, "Connexion");
         });
         Cr_button_inscription.addActionListener(e -> {
-            System.out.println("Inscription");
             if (Cr_password_text.getText().equals(Cr_password_confirm_text.getText())) {
                 ArrayList<String> data = new ArrayList<>();
                 data.add("adresse_email");
@@ -168,7 +195,7 @@ public class Interface_Connection extends JFrame {
                     if (client != null) {
                         client.close();
                     }
-                    client = new Thread_Client(PORT, ADDRESS, Cr_login_text.getText(), Cr_password_text.getText(), this, false, data);
+                    client = new Thread_Client(port, host, Cr_login_text.getText(), Cr_password_text.getText(), this, false, data);
                     client.start();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -177,11 +204,78 @@ public class Interface_Connection extends JFrame {
                 System.out.println("Les mots de passe ne correspondent pas");
             }
         });
+        // menu Server
+        Se_button_retour.addActionListener(e -> {
+            cardLayout.show(cards, "Connexion");
+        });
+        Se_button_modifier.addActionListener(e -> {
+            String temp_addr = Se_host_text.getText();
+            try{
+                int temp_port = Integer.parseInt(Se_port_text.getText());
+                // si l'adresse ip et le port sont valides
+                if (temp_addr.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$") && temp_port > 0 && temp_port < 65536) {
+                    // on écrit les nouvelles valeurs dans le fichier de configuration
+                    try (FileWriter fw = new FileWriter("src/Client/properties/configuration.properties")) {
+                        fw.write("server_host=" + Se_host_text.getText() + "\n");
+                        fw.write("server_port=" + Se_port_text.getText() + "\n");
+                        JOptionPane.showMessageDialog(null, "Les modifications ont été enregistrées\nVous devez redémarrer pour prendre en compte les changements", "Modification", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "L'adresse IP ou le port n'est pas valide", "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex){
+                JOptionPane.showMessageDialog(this, "Le port doit être un nombre", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        });
         // listener pour les touches
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     dispose();
+                }
+            }
+        });
+        // listener pour Se_host_text prend le focus
+        Se_host_text.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                Se_host_text.selectAll();
+                Se_host_text.setOpaque(true);
+                Se_host_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+        // listener pour Se_host_text perd le focus
+        Se_host_text.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                // si l'adresse ip est valide
+                if (!Se_host_text.getText().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")) {
+                    // met en rouge le champ
+                    Se_host_text.setBackground(Color.decode("#FF0000"));
+                }
+            }
+        });
+        // listener pour Se_port_text prend le focus
+        Se_port_text.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                Se_port_text.selectAll();
+                Se_port_text.setOpaque(true);
+                Se_port_text.setBackground(Color.decode("#FFFFFF"));
+            }
+        });
+        // listener pour Se_port_text perd le focus
+        Se_port_text.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                // si le port est valide
+                try{
+                    int temp_port = Integer.parseInt(Se_port_text.getText());
+                    if (temp_port < 0 || temp_port > 65536) {
+                        // met en rouge le champ
+                        Se_port_text.setBackground(Color.decode("#FF0000"));
+                    }
+                } catch (NumberFormatException ex){
+                    // met en rouge le champ
+                    Se_port_text.setBackground(Color.decode("#FF0000"));
                 }
             }
         });
@@ -333,7 +427,6 @@ public class Interface_Connection extends JFrame {
         });
 
 
-
     }
 
     public void error(String message) {
@@ -342,9 +435,5 @@ public class Interface_Connection extends JFrame {
 
     public void success(String message) {
         JOptionPane.showMessageDialog(this, message, "Succès", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    public static void main(String[] args) {
-        Interface_Connection fenetre = new Interface_Connection();
     }
 }

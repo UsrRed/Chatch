@@ -6,6 +6,7 @@ import tools.Connection_format;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -66,8 +67,10 @@ public class Traitement_serveur extends Thread {
                                 System.out.println("Deconnexion OK");
                                 client.dispose();
                                 Thread_Client.connexion.close();
+                                InetAddress host = socket.getInetAddress();
+                                int port = socket.getPort();
                                 this.socket.close();
-                                new Interface_Connection();
+                                new Interface_Connection(host, port);
                                 break;
                             case DECONNEXION_KO:
                                 System.out.println("Deconnexion KO");

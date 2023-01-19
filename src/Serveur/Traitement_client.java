@@ -18,7 +18,6 @@ public class Traitement_client extends Thread {
     private final int count;
     private int id = -1;
     private Socket socket = null;
-    private Database data = null;
     private BDD_Query query = null;
     private int PORT;
     Connect client = null;
@@ -28,7 +27,6 @@ public class Traitement_client extends Thread {
         System.out.println("Client " + count + " : se connecte !");
         this.PORT = PORT;
         this.socket = socket;
-        this.data = data;
         query = new BDD_Query(data);
     }
 
@@ -151,12 +149,11 @@ public class Traitement_client extends Thread {
                                     break;
                                 case ENVOI_MESSAGE:
                                     if (extract != null) {
-                                        Timestamp now = new Timestamp(System.currentTimeMillis());
                                         // get nom_utilisateur
                                         query.setQueryAsk("SELECT nom_utilisateur FROM utilisateur WHERE id_utilisateur=" + id + ";");
                                         ArrayList temp_result = (ArrayList) query.getQueryResult().get(0);
                                         String nom_utilisateur = (String) temp_result.get(0);
-                                        // voir pour insérer l'objet message et l'id de l'utilisateur (auto)
+                                        // voir pour insérer l'objet message et l'id de l'utilisateur et son nom (auto)
                                         query.setQueryExecute("INSERT INTO message (id_utilisateur, nom_utilisateur, " + extract.get(0) + ") VALUES(" + id + ", \"" + nom_utilisateur + "\", " + extract.get(1) + ");");
                                         query.setQueryAsk("SELECT * FROM message WHERE id_utilisateur=" + id + " AND nom_utilisateur=\"" + nom_utilisateur + "\" AND " + Search(annex) + ";");
                                         if (query.getQueryResult().size() > 0) {
