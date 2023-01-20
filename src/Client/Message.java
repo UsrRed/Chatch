@@ -30,9 +30,9 @@ public class Message implements Serializable {
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
         if (this.type == 1) {
-            if (this.nom_utilisateur.equals(Thread_Client.connexion.getNom_utilisateur())) {
+            if (!this.nom_utilisateur.equals(Thread_Client.connexion.getNom_utilisateur())) {
                 panel.add(new JLabel(" : " + this.nom_utilisateur), BorderLayout.EAST);
-                panel.add(new JLabel((String) this.contenu, JLabel.RIGHT), BorderLayout.CENTER);
+                panel.add(new JLabel(auto_saut((String) this.contenu), JLabel.RIGHT), BorderLayout.CENTER);
                 JLabel Jdate = new JLabel(this.date.toString(), JLabel.RIGHT);
                 Jdate.setFont(new Font("Arial", Font.ITALIC, 10));
                 Jdate.setForeground(Color.GRAY);
@@ -40,7 +40,7 @@ public class Message implements Serializable {
                 panel.setAlignmentX(Component.RIGHT_ALIGNMENT);
             } else {
                 panel.add(new JLabel(this.nom_utilisateur + " : ", JLabel.LEFT), BorderLayout.WEST);
-                panel.add(new JLabel((String) this.contenu, JLabel.LEFT), BorderLayout.CENTER);
+                panel.add(new JLabel(auto_saut((String) this.contenu), JLabel.LEFT), BorderLayout.CENTER);
                 JLabel Jdate = new JLabel(this.date.toString(), JLabel.LEFT);
                 Jdate.setFont(new Font("Arial", Font.ITALIC, 10));
                 Jdate.setForeground(Color.GRAY);
@@ -62,6 +62,20 @@ public class Message implements Serializable {
 
     public String getNom() {
         return nom_utilisateur;
+    }
+
+    public String auto_saut(String text) {
+        // ajoute des \n pour que le texte s'affiche correctement
+        String res = "";
+        int i = 0;
+        while (i < text.length()) {
+            if (i % 30 == 0 && i != 0) {
+                res += "\n";
+            }
+            res += text.charAt(i);
+            i++;
+        }
+        return res;
     }
 
     @Override

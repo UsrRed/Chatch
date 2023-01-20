@@ -20,6 +20,7 @@ public class Traitement_client extends Thread {
     private BDD_Query query = null;
     private int PORT;
     Connect client = null;
+    private String regex = "[^a-zA-Z0-9_@. !'$£%&*()\\-+=?;:,<>#{}\\[\\]~`^|]";
 
     public Traitement_client(Socket socket, Database data, int PORT) {
         count = ID_FACTORY.getAndIncrement();
@@ -65,7 +66,7 @@ public class Traitement_client extends Thread {
                         for (int i = 0; i < annex.size(); i++) {
                             if (annex.get(i) instanceof String) {
                                 // sanitize les réponses utilisateur
-                                annex.set(i, Objects.requireNonNull(annex.get(i)).toString().replaceAll("[^a-zA-Z0-9_@.]", ""));
+                                annex.set(i, Objects.requireNonNull(annex.get(i)).toString().replaceAll(regex, ""));
                             }
                         }
                     }
@@ -405,7 +406,7 @@ public class Traitement_client extends Thread {
 
     // methode sanitize sql
     public String sanitize(String str) {
-        return str.replaceAll("[^a-zA-Z0-9_@.]", "");
+        return str.replaceAll(regex, "");
     }
 
     public void Afficher(String text) {

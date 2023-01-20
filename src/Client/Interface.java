@@ -100,6 +100,37 @@ public class Interface extends JFrame {
             data_entry.requestFocus();
 
         });
+        menuChannel.addActionListener(e -> {
+            if (menuChannel.getSelectedItem().equals("+")) {
+                // Ouvre une fenêtre pour créer un nouveau channel
+                String channel_name = JOptionPane.showInputDialog("Nom du channel");
+                if (channel_name != null) {
+                    ArrayList<Object> channel = new ArrayList<>();
+                    channel.add(channel_name);
+                    try {
+                        Thread_Client.connexion.send(Connection_Codes.CREATION_DISCUSSION, channel);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            } else {
+                // Récupère les messages du channel
+                ArrayList<Object> message = new ArrayList<>();
+                Channel discussion = (Channel) menuChannel.getSelectedItem();
+                message.add(discussion.getId());
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.RECUPERATION_MESSAGES, message);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                // Récupère les utilisateurs du channel
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.RECUPERATION_UTILISATEURS, message);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
         // envoi de message avec la touche entrée
         data_entry.addActionListener(e -> {
             // TODO ne fonctionne pas
@@ -128,9 +159,9 @@ public class Interface extends JFrame {
             Message message = new Message((ArrayList) msg);
             // ajoute le message à la liste
             messages_frame.add(message.getPane());
-            messages_frame.revalidate();
-            messages_frame.repaint();
         }
+        messages_frame.revalidate();
+        messages_frame.repaint();
         scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
     }
 
@@ -166,36 +197,5 @@ public class Interface extends JFrame {
         menuChannel.revalidate();
         menuChannel.repaint();
         // add listener
-        menuChannel.addActionListener(e -> {
-            if (menuChannel.getSelectedItem().equals("+")) {
-                // Ouvre une fenêtre pour créer un nouveau channel
-                String channel_name = JOptionPane.showInputDialog("Nom du channel");
-                if (channel_name != null) {
-                    ArrayList<Object> channel = new ArrayList<>();
-                    channel.add(channel_name);
-                    try {
-                        Thread_Client.connexion.send(Connection_Codes.CREATION_DISCUSSION, channel);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            } else {
-                // Récupère les messages du channel
-                ArrayList<Object> message = new ArrayList<>();
-                Channel discussion = (Channel) menuChannel.getSelectedItem();
-                message.add(discussion.getId());
-                try {
-                    Thread_Client.connexion.send(Connection_Codes.RECUPERATION_MESSAGES, message);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-                // Récupère les utilisateurs du channel
-                try {
-                    Thread_Client.connexion.send(Connection_Codes.RECUPERATION_UTILISATEURS, message);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
     }
 }
