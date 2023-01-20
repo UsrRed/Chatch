@@ -1,4 +1,4 @@
-package tools;
+package Client;
 
 import Client.Thread_Client;
 
@@ -33,12 +33,18 @@ public class Message implements Serializable {
             if (this.nom_utilisateur.equals(Thread_Client.connexion.getNom_utilisateur())) {
                 panel.add(new JLabel(" : " + this.nom_utilisateur), BorderLayout.EAST);
                 panel.add(new JLabel((String) this.contenu, JLabel.RIGHT), BorderLayout.CENTER);
-                panel.add(new JLabel(this.date.toString(), JLabel.RIGHT), BorderLayout.SOUTH);
+                JLabel Jdate = new JLabel(this.date.toString(), JLabel.RIGHT);
+                Jdate.setFont(new Font("Arial", Font.ITALIC, 10));
+                Jdate.setForeground(Color.GRAY);
+                panel.add(Jdate, BorderLayout.SOUTH);
                 panel.setAlignmentX(Component.RIGHT_ALIGNMENT);
             } else {
                 panel.add(new JLabel(this.nom_utilisateur + " : ", JLabel.LEFT), BorderLayout.WEST);
                 panel.add(new JLabel((String) this.contenu, JLabel.LEFT), BorderLayout.CENTER);
-                panel.add(new JLabel(this.date.toString(), JLabel.LEFT), BorderLayout.SOUTH);
+                JLabel Jdate = new JLabel(this.date.toString(), JLabel.LEFT);
+                Jdate.setFont(new Font("Arial", Font.ITALIC, 10));
+                Jdate.setForeground(Color.GRAY);
+                panel.add(Jdate, BorderLayout.SOUTH);
                 panel.setAlignmentX(Component.LEFT_ALIGNMENT);
             }
         } else {

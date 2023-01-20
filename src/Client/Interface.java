@@ -1,7 +1,6 @@
 package Client;
 
 import tools.Connection_Codes;
-import tools.Message;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,17 +9,21 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Interface extends JFrame { // la classe Cadre1 hérite de la classe des fenêtres Frame
+public class Interface extends JFrame {
     private JPanel messages_frame = new JPanel();
     private JPanel chat = new JPanel();
-    protected Menu_class frame_menu = new Menu_class(this);
+    private JPanel menu = new JPanel();
+    private JComboBox menuChannel = new JComboBox();
+    JScrollPane scroll = new JScrollPane(messages_frame);
 
     public Interface() {
         super();
-
+        // Place les menus dans la barre
+        JButton config = new JButton(" Configuration ");
+        menu.add(menuChannel);
+        menu.add(config);
 
         messages_frame.setLayout(new BoxLayout(messages_frame, BoxLayout.Y_AXIS));
-        JScrollPane scroll = new JScrollPane(messages_frame);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setPreferredSize(new Dimension(400, 400));
@@ -37,31 +40,6 @@ public class Interface extends JFrame { // la classe Cadre1 hérite de la classe
         entry.add(valid_entry);
         chat.add(entry);
 
-        // envoi de message
-        valid_entry.addActionListener(e -> {
-            // récupère le texte de data_entry
-            String data = data_entry.getText();
-            // récupère le nom_utilisateur
-            String nom_utilisateur = Thread_Client.connexion.getNom_utilisateur();
-            // récupère le channel actuel
-            int channel = getID_current_chat();
-            // envoie le message
-            ArrayList<Object> message = new ArrayList<>();
-            message.add("id_discussion");
-            message.add(channel);
-            message.add("contenu");
-            message.add(data);
-            message.add("type_message");
-            message.add(1);
-            try {
-                Thread_Client.connexion.send(Connection_Codes.ENVOI_MESSAGE, message);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            // vide la zone de texte
-            data_entry.setText("");
-        });
-
         // Layouts
         messages_frame.setLayout(new BoxLayout(messages_frame, BoxLayout.Y_AXIS));
         entry.setLayout(new BoxLayout(entry, BoxLayout.X_AXIS));
@@ -75,7 +53,7 @@ public class Interface extends JFrame { // la classe Cadre1 hérite de la classe
         setForeground(Color.black); // couleur du texte
         // placement des éléments
         add(chat, BorderLayout.CENTER);
-        add(frame_menu, BorderLayout.NORTH);
+        add(menu, BorderLayout.NORTH);
         show();
         setSize(1280, 720); // définit la taille de la fenêtre
         setLocationRelativeTo(null); // centre la fenêtre
@@ -91,14 +69,44 @@ public class Interface extends JFrame { // la classe Cadre1 hérite de la classe
                 }
             }
         });
-    }
+        // envoi de message
+        valid_entry.addActionListener(e -> {
+            // récupère le texte de data_entry
+            String data = data_entry.getText();
+            if (!data.equals("")) {
+                // récupère le nom_utilisateur
+                String nom_utilisateur = Thread_Client.connexion.getNom_utilisateur();
+                // récupère le channel actuel
+                int channel = getID_current_Channel();
+                // envoie le message
+                ArrayList<Object> message = new ArrayList<>();
+                message.add("id_discussion");
+                message.add(channel);
+                message.add("contenu");
+                message.add(data);
+                message.add("type_message");
+                message.add(1);
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.ENVOI_MESSAGE, message);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            // vide la zone de texte
+            data_entry.setText("");
+            // met la scrollbar en bas
+            scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
+            // remet le focus sur la zone de texte
+            data_entry.requestFocus();
 
-    public int getID_current_chat() {
-        return frame_menu.getID();
-    }
-
-    public void setDiscussions(ArrayList<Object> listChan) {
-        frame_menu.reloadChannels(listChan);
+        });
+        // envoi de message avec la touche entrée
+        data_entry.addActionListener(e -> {
+            // TODO ne fonctionne pas
+            if (e.getActionCommand().equals("Enter")) {
+                valid_entry.doClick();
+            }
+        });
     }
 
     public void error(String message) {
@@ -109,6 +117,10 @@ public class Interface extends JFrame { // la classe Cadre1 hérite de la classe
         JOptionPane.showMessageDialog(this, message, "Succès", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    public int getID_current_Channel() {
+        return ((Channel) menuChannel.getSelectedItem()).getId();
+    }
+
     public void setMessages(ArrayList messages) {
         messages_frame.removeAll();
         for (Object msg : messages) {
@@ -116,14 +128,74 @@ public class Interface extends JFrame { // la classe Cadre1 hérite de la classe
             Message message = new Message((ArrayList) msg);
             // ajoute le message à la liste
             messages_frame.add(message.getPane());
+            messages_frame.revalidate();
+            messages_frame.repaint();
         }
+        scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
     }
 
-    public void addMessage(ArrayList<Object> message) {
+    public void addMessage(ArrayList<Object> msg) {
         // crée l'objet message
-        Message msg = new Message((ArrayList) message.get(0));
-        if (msg.getType() == 1) { // Message string classique
-            messages_frame.add(new JLabel((String) msg.getContenu(), JLabel.RIGHT));
+        Message message = new Message(msg);
+        messages_frame.add(message.getPane());
+        messages_frame.revalidate();
+        messages_frame.repaint();
+        scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
+    }
+
+    public void setDiscussions(ArrayList<Object> channels) {
+        menuChannel.removeAllItems();
+        int i = 0;
+        // transforme les items de channels en Object Channel
+        for (Object channel : channels) {
+            menuChannel.addItem(new Channel((String) ((ArrayList) channel).get(0), (int) ((ArrayList) channel).get(1), (String) ((ArrayList) channel).get(2)));
+            if (i == 0) {
+                menuChannel.setSelectedIndex(0);
+                int id = (int) ((ArrayList) channel).get(1);
+                ArrayList<Object> data = new ArrayList<>();
+                data.add(id);
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.RECUPERATION_MESSAGES, data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            i++;
         }
+        menuChannel.addItem("+");
+        menuChannel.revalidate();
+        menuChannel.repaint();
+        // add listener
+        menuChannel.addActionListener(e -> {
+            if (menuChannel.getSelectedItem().equals("+")) {
+                // Ouvre une fenêtre pour créer un nouveau channel
+                String channel_name = JOptionPane.showInputDialog("Nom du channel");
+                if (channel_name != null) {
+                    ArrayList<Object> channel = new ArrayList<>();
+                    channel.add(channel_name);
+                    try {
+                        Thread_Client.connexion.send(Connection_Codes.CREATION_DISCUSSION, channel);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            } else {
+                // Récupère les messages du channel
+                ArrayList<Object> message = new ArrayList<>();
+                Channel discussion = (Channel) menuChannel.getSelectedItem();
+                message.add(discussion.getId());
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.RECUPERATION_MESSAGES, message);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                // Récupère les utilisateurs du channel
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.RECUPERATION_UTILISATEURS, message);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
     }
 }

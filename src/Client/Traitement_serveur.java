@@ -77,6 +77,9 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case CREATION_DISCUSSION_OK:
                                 System.out.println("Creation discussion OK");
+                                if (annex != null) {
+                                    // client.addDiscussion((String) annex.get(0));
+                                }
                                 break;
                             case CREATION_DISCUSSION_KO:
                                 System.out.println("Creation discussion KO");
@@ -100,7 +103,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case ENVOI_MESSAGE_OK:
                                 System.out.println("Envoi message OK");
-                                client.addMessage(annex);
+                                client.addMessage((ArrayList<Object>) annex.get(0));
                                 break;
                             case ENVOI_MESSAGE_KO:
                                 System.out.println("Envoi message KO");

@@ -105,7 +105,9 @@ public class Traitement_client extends Thread {
                                                 } while (query.getQueryResult().size() == 0 && tentatives < 10);
                                                 System.out.println(query.getQueryResult());
                                                 if (query.getQueryResult().size() > 0) {
-                                                    client.send(Connection_Codes.CREATION_DISCUSSION_OK);
+                                                    ArrayList<Object> res = new ArrayList<>();
+                                                    res.add(annex.get(0));
+                                                    client.send(Connection_Codes.CREATION_DISCUSSION_OK, res);
                                                 } else {
                                                     client.send(Connection_Codes.CREATION_DISCUSSION_KO);
                                                     query.setQueryExecute("DELETE FROM discussion WHERE id_discussion=" + result.get(0) + ";");
