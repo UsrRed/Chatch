@@ -54,8 +54,8 @@ db_name=
 Décrivez brièvement l'objectif de ce projet.
 
 Ce projet a été réalisé par :
-* Etudiant 1
-* Etudiant 2
+* Yohann DENOYELLE
+* Eliott LEBOSSÉ
 
 ### Principales caractéristiques
 
