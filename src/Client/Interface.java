@@ -8,6 +8,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static java.lang.System.exit;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe permet de créer une interface Homme-Machine pour le chat.
@@ -91,13 +94,14 @@ public class Interface extends JFrame {
 
         addWindowListener(new WindowAdapter() { // fermeture de la fenêtre
             public void windowClosing(WindowEvent e) {
-                // TODO : fermeture indirecte avec demande au serveur (ne fonctionne pas)
                 try {
                     Thread_Client.connexion.send(Connection_Codes.DECONNEXION);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
                 System.out.println("Fermeture de la fenêtre");
+                dispose();
+                exit(0);
             }
         });
         // bouton de configuration
@@ -184,10 +188,11 @@ public class Interface extends JFrame {
             // récupère le nom de l'utilisateur
             String user_name = JOptionPane.showInputDialog("Nom de l'utilisateur");
             // dialog avec le choix du role de l'utilisateur
-            Object[] options = {"Administrateur", "Modérateur", "Membre"};
+            Object[] options = {"Membre", "Modérateur", "Administrateur"};
             int role = JOptionPane.showOptionDialog(null,
                     "Quel est le rôle de l'invité ?", "Rôle de l'utilisateur",
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]) + 1;
+            System.out.println(role);
             if (user_name != null) {
                 // envoie le message
                 ArrayList<Object> message = new ArrayList<>();
@@ -228,6 +233,7 @@ public class Interface extends JFrame {
             // envoie le message
             ArrayList<Object> message = new ArrayList<>();
             message.add(channel);
+            SwingUtilities.updateComponentTreeUI(chat);
             try {
                 Thread_Client.connexion.send(Connection_Codes.SUPPRESSION_DISCUSSION, message);
             } catch (IOException ex) {
@@ -313,13 +319,13 @@ public class Interface extends JFrame {
             String description = (String) membre.get(1);
             int role_id = (int) membre.get(2);
             JLabel Jnom = new JLabel(nom);
-            if (role_id == 1) {
+            if (role_id == 3) {
                 Jnom.setText(Jnom.getText() + " (Admin)");
                 Jnom.setForeground(Color.RED);
             } else if (role_id == 2) {
                 Jnom.setText(Jnom.getText() + " (Modérateur)");
                 Jnom.setForeground(Color.BLUE);
-            } else if (role_id == 3) {
+            } else if (role_id == 1) {
                 Jnom.setText(Jnom.getText() + " (Membre)");
                 Jnom.setForeground(Color.BLACK);
             } else {
@@ -338,5 +344,6 @@ public class Interface extends JFrame {
         sub_propriete.repaint();
         propriete.revalidate();
         propriete.repaint();
+
     }
 }

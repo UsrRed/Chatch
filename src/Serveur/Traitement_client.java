@@ -463,14 +463,14 @@ public class Traitement_client extends Thread {
                                             int ext_role = (int) annex.get(2);
                                             String txt_role = "";
                                             switch (ext_role) {
-                                                case 0:
+                                                case 1:
                                                     txt_role = "utilisateur";
                                                     break;
-                                                case 1:
-                                                    txt_role = "modérateur";
-                                                    break;
                                                 case 2:
-                                                    txt_role = "administrateur";
+                                                    txt_role = "Modérateur";
+                                                    break;
+                                                case 3:
+                                                    txt_role = "Administrateur";
                                                     break;
                                                 default:
                                                     txt_role = "utilisateur";
@@ -480,11 +480,11 @@ public class Traitement_client extends Thread {
                                                 query.setQueryAsk("SELECT id_utilisateur FROM utilisateur WHERE nom_utilisateur=\"" + annex.get(1) + "\";");
                                                 ArrayList<Object> id_utilisateur = (ArrayList<Object>) query.getQueryResult().get(0);
                                                 // ajouter l'utilisateur à la discussion
-                                                query.setQueryExecute("INSERT INTO groupe_discussion (id_discussion, id_utilisateur, role) VALUES (" + annex.get(0) + ", " + id_utilisateur.get(0) + ", " + annex.get(2) + ");");
+                                                query.setQueryExecute("INSERT INTO groupe_discussion (id_discussion, id_utilisateur, role) VALUES (" + annex.get(0) + ", " + id_utilisateur.get(0) + ", " + ext_role + ");");
                                                 query.setQueryAsk("SELECT * FROM groupe_discussion g, utilisateur u WHERE g.id_discussion=" + annex.get(0) + " AND u.nom_utilisateur='" + annex.get(1) + "' AND g.id_utilisateur=u.id_utilisateur;");
                                                 if (query.getQueryResult().size() > 0) {
                                                     ArrayList<Object> success = new ArrayList<>();
-                                                    success.add("Le'utilisateur " + txt_role + " a bien été ajouté à la discussion");
+                                                    success.add("L'utilisateur " + txt_role + " a bien été ajouté à la discussion");
                                                     client.send(Connection_Codes.AJOUT_UTILISATEUR_DISCUSSION_OK, success);
                                                 } else {
                                                     ArrayList<Object> error = new ArrayList<>();
