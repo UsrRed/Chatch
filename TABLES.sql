@@ -9,9 +9,11 @@ CREATE TABLE utilisateur(
 );
 
 CREATE TABLE connexions(
-	id_utilisateur INT,
+	id_connection INT auto_increment not null,
+    id_utilisateur INT,
     	adresse_ip VARCHAR(500), # Ne pas mettre unique pour relever la dernière co et aussi car un user peut se co avec plusieurs comptes sur une seule IP
     	date_co date,
+    	PRIMARY KEY (id_connection)
     	FOREIGN KEY (id_utilisateur) 
 		REFERENCES utilisateur(id_utilisateur) 
         	ON UPDATE CASCADE ON DELETE RESTRICT
