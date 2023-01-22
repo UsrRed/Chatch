@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe permet d'initialiser le serveur.
+ * Elle permet aussi de récupérer les informations de connexion à la base de données qui sont stockées dans un fichier properties.
+ */
 public class Serveur {
 
     private static final int PORT = 2009; // socket port

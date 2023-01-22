@@ -11,7 +11,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe permet de recevoir les requetes du client et de les traiter.
+ * Une fois le traitement effectué, elle envoie la réponse au client.
+ */
 public class Traitement_client extends Thread {
     private static final AtomicInteger ID_FACTORY = new AtomicInteger();
     private final int count;

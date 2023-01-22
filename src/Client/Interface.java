@@ -8,7 +8,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe permet de créer une interface Homme-Machine pour le chat.
+ * Il s'agit de la fenêtre principale de l'application.
+ */
 public class Interface extends JFrame {
     // chat comportant message_frame et l'envoie de messages
     private JPanel chat = new JPanel();

@@ -8,7 +8,11 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe permet de créer un thread qui va écouter les messages entrants du serveur (réponses aux requetes).
+ * Ainsi que de créer un thread qui va nous permettre d'envoyer des messages au serveur (requetes).
+ */
 public class Thread_Client extends Thread {
     private ServerSocket server = null;
     private Socket socket = null;

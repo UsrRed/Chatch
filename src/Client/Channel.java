@@ -1,5 +1,11 @@
 package Client;
 
+/**
+    * @author : Eliott LEBOSSE et Yohann DENOYELLE
+    * Cette classe permet de créer des Channel, aussi appelé "discussion" dans l'application.
+    * Il s'agit simplement d'un objet stocké dans le menu déroulant de la fenêtre principale.
+    * Il permet d'obtenir facilement les informations sur le channel (nom, id, etc...)
+ */
 public class Channel {
     protected int id;
     protected String nom;

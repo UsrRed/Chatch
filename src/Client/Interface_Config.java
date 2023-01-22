@@ -8,7 +8,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe permet configurer les paramètre de l'utilisateur.
+ * Il peut changer son pseudo, son mot de passe, son avatar, etc...
+ * Il peut aussi supprimer son compte.
+ */
 public class Interface_Config extends JFrame {
 
     public Interface_Config() {

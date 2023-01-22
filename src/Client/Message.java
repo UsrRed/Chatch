@@ -5,7 +5,12 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe représente les messages envoyés par les utilisateurs.
+ * Elle permet de stocker les informations sur le message (id, contenu, date, etc...)
+ * Elle génère aussi directement le message sous forme de JLabel pour l'afficher dans la fenêtre principale.
+ */
 public class Message implements Serializable {
     protected int id; // id du message
     protected int id_discussion; // id de la discussion
@@ -52,18 +57,6 @@ public class Message implements Serializable {
         } else {
             // TODO: message image et autres
         }
-    }
-
-    public Object getContenu() {
-        return contenu;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public String getNom() {
-        return nom_utilisateur;
     }
 
     public ArrayList<String> auto_saut(String text, int nb_carac) {

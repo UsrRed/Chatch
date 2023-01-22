@@ -7,7 +7,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe permet de créer une fenêtre de connexion.
+ * Elle permet de récupérer les informations de connexion de l'utilisateur et de les envoyer au serveur.
+ * On peut se connecter, créer son compte et changer de serveur.
+ */
 public class Interface_Connection extends JFrame {
     private final InetAddress host; // socket host
     private final int port; // socket port

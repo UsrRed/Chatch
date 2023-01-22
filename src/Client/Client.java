@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe permet d'initialiser le client et de lancer la fenêtre principale.
+ * Elle permet aussi de récupérer les informations de connexion à la base de données qui sont stockées dans un fichier properties.
+ */
 public class Client {
 
     public static void main(String[] args) throws IOException {
-        // test connection TheBaye usr : TheBaye ; pass : 1234
         // fichier properties
         Properties properties = new Properties();
         try {

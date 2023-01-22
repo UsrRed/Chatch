@@ -4,7 +4,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe nous simplifie la récupération des données de la base de données.
+ * Elle permet de récupérer les données sous forme de tableau ArrayList.
+ */
 public class BDD_Query {
     // la BDD utilisé par la requête
     protected Database BDD;

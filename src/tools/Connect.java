@@ -7,7 +7,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
-
+/**
+ * @author : Eliott LEBOSSE et Yohann DENOYELLE
+ * Cette classe permet de créer une connexion serveur/client ou client/serveur.
+ * Très pratique pour formaliser les échanges entre les deux.
+ */
 public class Connect {
     private Socket socket = null;
     private OutputStream out = null;
