@@ -51,7 +51,12 @@ db_name=
 
 ### A propos de ce projet
 
-Décrivez brièvement l'objectif de ce projet.
+Le projet Tchatch à pour but de réunir des personnes grâce à un tchat privé. 
+Ce nom provient de 3 mots différents concaténés : 
+ - CHAT : en anglais, veut dire une discussion en français.
+ - TO HATCH : en anglais, éclore en français. Car des nouvelles relations se forment et éclosent sur cette application.
+ - TCHATCH : en français, fait référence au fait de discuter. Les deux mots précedent forment donc ce nom.
+
 
 Ce projet a été réalisé par :
 * Yohann DENOYELLE
@@ -59,10 +64,13 @@ Ce projet a été réalisé par :
 
 ### Principales caractéristiques
 
+Dessus il vous est possible de discuter avec une personne où plusieurs grâce au "channels" de discussion. Vous pourrez donc créer un channel avec une ou plusieurs personnes. Lors du lancement de l'application vous pourrez choisir de créer un compte ou de se connecter à un existant. 
+
 Les principales caractéristiques du projet sont les suivantes :
-* Caractéristique 1
-* ...
-N'hésitez pas préciser si certaines caractéristiques ne fonctionnent pas encore correctement, celles ajoutées par rapport au livrable précédent, celles en cours d'implémentation, etc.
+* Discussion seul ou à plusieurs;
+* Créer un compte;
+* personnalisez son profil grâce au pseudo, description, image de profil (à venir);
+* personnalisez votre discussion en changeant son nom ou sa photo de profil (image:à venir);
 
 ### Comment installer l'application ?
 
@@ -73,7 +81,7 @@ Décrivez comment installer votre application :
 
 ### Comment utiliser l'application ?
 
-Décrivez comment utiliser votre application.
+Pour utiliser l'application il vous faut démarer votre client, et votre serveur si vous héberger votre discussion. Créez votre compte ou connectez-vous. Il ne vous reste plus qu'a discuter si vous avez déjà une discussion. Sinon créez votre discussion grâce au "+".
 
 
 
