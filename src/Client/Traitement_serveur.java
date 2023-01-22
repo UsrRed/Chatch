@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Traitement_serveur extends Thread {
 
@@ -55,7 +54,7 @@ public class Traitement_serveur extends Thread {
                                 client = new Interface();
                                 fen.dispose();
                                 Thread_Client.connexion.send(Connection_Codes.RECUPERATION_DISCUSSIONS);
-                                if (annex.get(0) != null) {
+                                if (annex.size() > 0) {
                                     client.success((String) annex.get(0));
                                 }
                                 break;
@@ -63,7 +62,7 @@ public class Traitement_serveur extends Thread {
                                 System.out.println("Connexion KO");
                                 if (annex != null) {
                                     System.out.println(annex.get(0));
-                                } else{
+                                } else {
                                     fen.error("Connection échouée !");
                                 }
                                 break;
@@ -78,6 +77,9 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case DECONNEXION_KO:
                                 System.out.println("Deconnexion KO");
+                                client.dispose();
+                                Thread_Client.connexion.close();
+                                this.socket.close();
                                 break;
                             case CREATION_DISCUSSION_OK:
                                 System.out.println("Creation discussion OK");
@@ -89,7 +91,7 @@ public class Traitement_serveur extends Thread {
                                 System.out.println("Creation discussion KO");
                                 if (annex != null) {
                                     client.error((String) annex.get(0));
-                                } else{
+                                } else {
                                     client.error("Création de discussion échouée !");
                                 }
                                 break;
@@ -128,13 +130,13 @@ public class Traitement_serveur extends Thread {
                             case CREATION_UTILISATEUR_OK:
                                 System.out.println("Creation utilisateur OK");
                                 fen.cardLayout.show(fen.cards, "Connexion");
-                                if (annex != null){
+                                if (annex != null) {
                                     fen.success(annex.get(0).toString());
                                 }
                                 break;
                             case CREATION_UTILISATEUR_KO:
                                 System.out.println("Creation utilisateur KO");
-                                if (annex != null){
+                                if (annex != null) {
                                     fen.error(annex.get(0).toString());
                                 } else {
                                     fen.error("Erreur lors de la création de l'utilisateur");
@@ -147,7 +149,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case SUPPRESSION_UTILISATEUR_KO:
                                 System.out.println("Suppression utilisateur KO");
-                                if (annex != null){
+                                if (annex != null) {
                                     fen.error(annex.get(0).toString());
                                 } else {
                                     fen.error("Erreur lors de la suppression de l'utilisateur");
@@ -155,13 +157,13 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case MODIFICATION_UTILISATEUR_OK:
                                 System.out.println("Modification utilisateur OK");
-                                if (annex != null){
+                                if (annex != null) {
                                     fen.success(annex.get(0).toString());
                                 }
                                 break;
                             case MODIFICATION_UTILISATEUR_KO:
                                 System.out.println("Modification utilisateur KO");
-                                if (annex != null){
+                                if (annex != null) {
                                     fen.error(annex.get(0).toString());
                                 } else {
                                     fen.error("Erreur lors de la modification de l'utilisateur");
@@ -206,7 +208,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case RECUPERATION_DISCUSSION_KO:
                                 System.out.println("Recuperation discussion KO");
-                                if (annex != null){
+                                if (annex != null) {
                                     client.error(annex.get(0).toString());
                                 } else {
                                     client.error("Erreur lors de la récupération de la discussion");
@@ -221,7 +223,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case AJOUT_UTILISATEUR_DISCUSSION_OK:
                                 System.out.println("Ajout utilisateur discussion OK");
-                                if (annex != null){
+                                if (annex != null) {
                                     client.success(annex.get(0).toString());
                                 } else {
                                     client.success("Utilisateur ajouté à la discussion");
@@ -229,7 +231,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case AJOUT_UTILISATEUR_DISCUSSION_KO:
                                 System.out.println("Ajout utilisateur discussion KO");
-                                if (annex != null){
+                                if (annex != null) {
                                     client.error(annex.get(0).toString());
                                 } else {
                                     client.error("Erreur lors de l'ajout de l'utilisateur à la discussion");
@@ -237,7 +239,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case SUPPRESSION_UTILISATEUR_DISCUSSION_OK:
                                 System.out.println("Suppression utilisateur discussion OK");
-                                if (annex != null){
+                                if (annex != null) {
                                     client.success(annex.get(0).toString());
                                 } else {
                                     client.success("Utilisateur supprimé de la discussion");
@@ -245,7 +247,7 @@ public class Traitement_serveur extends Thread {
                                 break;
                             case SUPPRESSION_UTILISATEUR_DISCUSSION_KO:
                                 System.out.println("Suppression utilisateur discussion KO");
-                                if (annex != null){
+                                if (annex != null) {
                                     client.error(annex.get(0).toString());
                                 } else {
                                     client.error("Erreur lors de la suppression de l'utilisateur de la discussion");

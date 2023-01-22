@@ -1,7 +1,5 @@
 package Client;
 
-import Client.Thread_Client;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
@@ -31,7 +29,7 @@ public class Message implements Serializable {
         panel.setBackground(Color.WHITE);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.setMaximumSize(new Dimension((int) (width*0.95), 1000));
+        panel.setMaximumSize(new Dimension((int) (width * 0.95), 1000));
         panel.add(new JLabel(" "));
         if (this.type == 1) {
             JLabel user = new JLabel(this.nom_utilisateur);

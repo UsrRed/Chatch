@@ -75,7 +75,6 @@ public class Interface extends JFrame {
         setTitle("Chatch"); // définit le titre de la fenêtre
         //setResizable(false); // permet de désactiver le carré qui agrandi la fenêtre
         setLayout(new BorderLayout(2, 2)); // pas de Layout, nous positionnons les composants nous-mêmes
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBackground(Color.decode("#FF0000")); // couleur du background
         setForeground(Color.black); // couleur du texte
         // placement des éléments
@@ -88,13 +87,13 @@ public class Interface extends JFrame {
 
         addWindowListener(new WindowAdapter() { // fermeture de la fenêtre
             public void windowClosing(WindowEvent e) {
-                dispose();
-                // envoie du message "deconnexion"
+                // TODO : fermeture indirecte avec demande au serveur (ne fonctionne pas)
                 try {
                     Thread_Client.connexion.send(Connection_Codes.DECONNEXION);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+                System.out.println("Fermeture de la fenêtre");
             }
         });
         // bouton de configuration
@@ -184,7 +183,7 @@ public class Interface extends JFrame {
             Object[] options = {"Administrateur", "Modérateur", "Membre"};
             int role = JOptionPane.showOptionDialog(null,
                     "Quel est le rôle de l'invité ?", "Rôle de l'utilisateur",
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2])+1;
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]) + 1;
             if (user_name != null) {
                 // envoie le message
                 ArrayList<Object> message = new ArrayList<>();
@@ -268,6 +267,7 @@ public class Interface extends JFrame {
     }
 
     public void setDiscussions(ArrayList<Object> channels) {
+        // TODO : optimiser le rafrachissement, ne pas avoir a redémarer.
         menuChannel.removeAllItems();
         int i = 0;
         // transforme les items de channels en Object Channel

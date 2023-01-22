@@ -474,7 +474,7 @@ public class Traitement_client extends Thread {
                                             }
                                             if (ext_role <= role) {
                                                 query.setQueryAsk("SELECT id_utilisateur FROM utilisateur WHERE nom_utilisateur=\"" + annex.get(1) + "\";");
-                                                ArrayList<Object> id_utilisateur =(ArrayList<Object>) query.getQueryResult().get(0);
+                                                ArrayList<Object> id_utilisateur = (ArrayList<Object>) query.getQueryResult().get(0);
                                                 // ajouter l'utilisateur à la discussion
                                                 query.setQueryExecute("INSERT INTO groupe_discussion (id_discussion, id_utilisateur, role) VALUES (" + annex.get(0) + ", " + id_utilisateur.get(0) + ", " + annex.get(2) + ");");
                                                 query.setQueryAsk("SELECT * FROM groupe_discussion g, utilisateur u WHERE g.id_discussion=" + annex.get(0) + " AND u.nom_utilisateur='" + annex.get(1) + "' AND g.id_utilisateur=u.id_utilisateur;");
