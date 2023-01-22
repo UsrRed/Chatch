@@ -62,6 +62,8 @@ public class Traitement_client extends Thread {
                     Connection_Codes code = message.getContenu();
                     ArrayList<Object> annex = message.getAnnex();
                     ArrayList<String> extract = Extraction(annex);
+                    ArrayList<Object> result = null;
+                    ArrayList<Object> header = null;
                     if (annex != null) {
                         for (int i = 0; i < annex.size(); i++) {
                             if (annex.get(i) instanceof String) {
@@ -71,11 +73,11 @@ public class Traitement_client extends Thread {
                         }
                     }
                     try {
-                        Afficher("Message reçu : code{" + code + "} annex{" + annex + "} extract{" + extract + "}");
+                        Afficher("Message reçu : code{" + code + "} annex{" + annex + "} extract{" + extract + "} Search{" + Search(annex) + "}");
                         // trie des différents codes
                         if (code == Connection_Codes.CONNEXION) {
                             query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur=\"" + annex.get(0) + "\" AND motdepasse=\"" + annex.get(1) + "\";");
-                            ArrayList<Object> result = query.getQueryResult();
+                            result = query.getQueryResult();
                             if (result.size() > 0) {
                                 client.send(Connection_Codes.CONNEXION_OK);
                                 // récupération de l'id de l'utilisateur
@@ -95,7 +97,7 @@ public class Traitement_client extends Thread {
                                         if (query.getQueryResult().size() == 0) {
                                             query.setQueryExecute("INSERT INTO discussion (nom_discussion) VALUES(\"" + annex.get(0) + "\");");
                                             query.setQueryAsk("SELECT id_discussion FROM discussion WHERE nom_discussion=\"" + annex.get(0) + "\";");
-                                            ArrayList result = (ArrayList<Object>) query.getQueryResult().get(0);
+                                            result = (ArrayList<Object>) query.getQueryResult().get(0);
                                             if (result.size() > 0) {
                                                 int tentatives = 0;
                                                 do {
@@ -165,7 +167,7 @@ public class Traitement_client extends Thread {
                                         query.setQueryAsk("SELECT * FROM message WHERE id_utilisateur=" + id + " AND nom_utilisateur=\"" + nom_utilisateur + "\" AND " + Search(annex) + ";");
                                         if (query.getQueryResult().size() > 0) {
                                             System.out.println(query.getQueryResult());
-                                            ArrayList<Object> result = query.getQueryResult();
+                                            result = query.getQueryResult();
                                             client.send(Connection_Codes.ENVOI_MESSAGE_OK, result);
                                         } else {
                                             ArrayList<Object> error = new ArrayList<>();
@@ -192,8 +194,8 @@ public class Traitement_client extends Thread {
                                 case MODIFICATION_MESSAGE:
                                     query.setQueryExecute("UPDATE message SET contenu=\"" + annex.get(0) + "\" WHERE id_message=" + annex.get(1) + ";");
                                     query.setQueryAsk("SELECT * FROM message WHERE id_message=" + annex.get(1) + ";");
-                                    ArrayList<Object> result = query.getQueryResult();
-                                    ArrayList<Object> header = query.getQueryHeader();
+                                    result = query.getQueryResult();
+                                    header = query.getQueryHeader();
                                     if (result.size() > 0 && result.get(header.indexOf("contenu")).equals(annex.get(0))) {
                                         client.send(Connection_Codes.MODIFICATION_MESSAGE_OK);
                                     } else {
@@ -203,6 +205,11 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case SUPPRESSION_UTILISATEUR:
+                                    query.setQueryExecute("DELETE FROM groupe_discussion WHERE id_utilisateur=" + id + ";");
+                                    query.setQueryExecute("DELETE FROM connexions WHERE id_utilisateur=" + id + ";");
+                                    query.setQueryAsk("SELECT nom_utilisateur FROM utilisateur WHERE id_utilisateur=" + id + ";");
+                                    result =(ArrayList<Object>) query.getQueryResult().get(0);
+                                    query.setQueryExecute("UPDATE message SET id_utilisateur=1, nom_utilisateur=\"(deleted account) " + result.get(0) + "\" WHERE id_utilisateur=" + id + ";");
                                     query.setQueryExecute("DELETE FROM utilisateur WHERE id_utilisateur=" + id + ";");
                                     query.setQueryAsk("SELECT * FROM utilisateur WHERE id_utilisateur=" + id + ";");
                                     if (query.getQueryResult().size() == 0) {
@@ -216,7 +223,81 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case MODIFICATION_UTILISATEUR:
-                                    //query.setQueryExecute("UPDATE utilisateur SET nom_de_colonne ="+ extract.get(0) +" WHERE id_utilisateur= "+ extract.get(1) +" ;");
+                                    if (extract != null) {
+                                        Boolean isOK = true;
+                                        // on vérifie la validité des arguments
+                                        for (int i = 0; i < annex.size() / 2; i++) {
+                                            switch ((String) annex.get(i * 2)) {
+                                                case "nom_utilisateur":
+                                                    query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur=\"" + annex.get(i * 2 + 1) + "\";");
+                                                    if (!(query.getQueryResult().size() == 0)) {
+                                                        ArrayList<Object> error = new ArrayList<>();
+                                                        error.add("Nom d'utilisateur déjà utilisé");
+                                                        client.send(Connection_Codes.MODIFICATION_UTILISATEUR_KO, error);
+                                                        isOK = false;
+                                                    }
+                                                    break;
+                                                case "motdepasse":
+                                                    if (annex.get(i * 2 + 1).toString().length() < 4) {
+                                                        ArrayList<Object> error = new ArrayList<>();
+                                                        error.add("Mot de passe trop court");
+                                                        client.send(Connection_Codes.MODIFICATION_UTILISATEUR_KO, error);
+                                                        isOK = false;
+                                                    }
+                                                    break;
+                                                case "adresse_email":
+                                                    query.setQueryAsk("SELECT * FROM utilisateur WHERE adresse_email=\"" + annex.get(i * 2 + 1) + "\";");
+                                                    if (!(query.getQueryResult().size() == 0)) {
+                                                        ArrayList<Object> error = new ArrayList<>();
+                                                        error.add("Email déjà utilisé");
+                                                        client.send(Connection_Codes.MODIFICATION_UTILISATEUR_KO, error);
+                                                        isOK = false;
+                                                    }
+                                                    if (!(annex.get(i * 2 + 1).toString().contains("@") && annex.get(i * 2 + 1).toString().contains("."))) {
+                                                        ArrayList<Object> error = new ArrayList<>();
+                                                        error.add("Email invalide");
+                                                        client.send(Connection_Codes.MODIFICATION_UTILISATEUR_KO, error);
+                                                        isOK = false;
+                                                    }
+                                                    break;
+                                                case "description_utilisateur":
+                                                    // pas de critères particuliers
+                                                    break;
+                                                case "photo_utilisateur":
+                                                    // TODO
+                                                    break;
+                                                default:
+                                                    ArrayList<Object> error = new ArrayList<>();
+                                                    error.add("Erreur de format");
+                                                    client.send(Connection_Codes.MODIFICATION_UTILISATEUR_KO, error);
+                                                    isOK = false;
+                                                    break;
+                                            }
+                                        }
+                                        if (isOK) {
+                                            // on modifie les données
+                                            query.setQueryExecute("UPDATE utilisateur SET " + SET(annex) + " WHERE id_utilisateur=" + id + ";");
+                                            // on vérifie que les données ont bien été modifiées
+                                            query.setQueryAsk("SELECT * FROM utilisateur WHERE id_utilisateur=" + id + " AND " + Search(annex) + ";");
+                                            if (query.getQueryResult().size() > 0) {
+                                                ArrayList<Object> success = new ArrayList<>();
+                                                success.add("Utilisateur modifié");
+                                                client.send(Connection_Codes.MODIFICATION_UTILISATEUR_OK, success);
+                                            } else {
+                                                ArrayList<Object> error = new ArrayList<>();
+                                                error.add("Erreur lors de la modification de l'utilisateur");
+                                                client.send(Connection_Codes.MODIFICATION_UTILISATEUR_KO, error);
+                                            }
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("Erreur lors de la modification de l'utilisateur");
+                                            client.send(Connection_Codes.MODIFICATION_UTILISATEUR_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur de format");
+                                        client.send(Connection_Codes.MODIFICATION_UTILISATEUR_KO, error);
+                                    }
                                     break;
                                 case CREATION_ADMIN_DISCUSSION:
                                     //UPDATE groupe_discussion SET role=... WHERE id_utilisateur=... AND id_discussion=... ;
@@ -392,6 +473,34 @@ public class Traitement_client extends Thread {
                             txt += sanitize(annex.get(i * 2).toString()) + " = \"" + sanitize(annex.get(i * 2 + 1).toString()) + "\" AND ";
                         } else {
                             txt += sanitize(annex.get(i * 2).toString()) + " = " + sanitize(annex.get(i * 2 + 1).toString()) + " AND ";
+                        }
+                    }
+                }
+                return txt;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public String SET(ArrayList<Object> annex) {
+        if (annex != null) {
+            if (annex.size() % 2 == 0) {
+                String txt = "";
+                for (int i = 0; i < annex.size() / 2; i++) {
+                    if (i == annex.size() / 2 - 1) {
+                        if (annex.get(i * 2 + 1) instanceof String) {
+                            txt += sanitize(annex.get(i * 2).toString()) + " = \"" + sanitize(annex.get(i * 2 + 1).toString()) + "\"";
+                        } else {
+                            txt += sanitize(annex.get(i * 2).toString()) + " = " + sanitize(annex.get(i * 2 + 1).toString());
+                        }
+                    } else {
+                        if (annex.get(i * 2 + 1) instanceof String) {
+                            txt += sanitize(annex.get(i * 2).toString()) + " = \"" + sanitize(annex.get(i * 2 + 1).toString()) + "\", ";
+                        } else {
+                            txt += sanitize(annex.get(i * 2).toString()) + " = " + sanitize(annex.get(i * 2 + 1).toString()) + ", ";
                         }
                     }
                 }

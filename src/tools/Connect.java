@@ -14,9 +14,11 @@ public class Connect {
     private ObjectOutputStream writer = null;
     private Connection_format msg = null;
     private String nom_utilisateur = null;
+    private String password = null;
 
     public Connect(int PORT, InetAddress address, String nom_utilisateur, String password, Boolean exist, ArrayList<String> data) throws IOException {
         this.nom_utilisateur = nom_utilisateur;
+        this.password = password;
         try {
             socket = new Socket(address, PORT);
             System.out.println("connecté " + socket);
@@ -87,5 +89,9 @@ public class Connect {
 
     public String getNom_utilisateur() {
         return nom_utilisateur;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

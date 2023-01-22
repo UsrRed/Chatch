@@ -18,7 +18,7 @@ public class Message implements Serializable {
     protected String nom_utilisateur; // nom de l'utilisateur qui a envoyé le message
     protected JPanel panel; // panel du message
 
-    public Message(ArrayList message) {
+    public Message(ArrayList message, int width) {
         this.id = (int) message.get(0);
         this.id_discussion = (int) message.get(1);
         this.id_utilisateur = (int) message.get(2);
@@ -28,25 +28,29 @@ public class Message implements Serializable {
         this.nom_utilisateur = (String) message.get(6);
 
         panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.setMaximumSize(new Dimension((int) (width*0.95), 1000));
+        panel.add(new JLabel(" "));
         if (this.type == 1) {
+            JLabel user = new JLabel(this.nom_utilisateur);
             if (!this.nom_utilisateur.equals(Thread_Client.connexion.getNom_utilisateur())) {
-                panel.add(new JLabel(" : " + this.nom_utilisateur), BorderLayout.EAST);
-                panel.add(new JLabel(auto_saut((String) this.contenu), JLabel.RIGHT), BorderLayout.CENTER);
-                JLabel Jdate = new JLabel(this.date.toString(), JLabel.RIGHT);
-                Jdate.setFont(new Font("Arial", Font.ITALIC, 10));
-                Jdate.setForeground(Color.GRAY);
-                panel.add(Jdate, BorderLayout.SOUTH);
-                panel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                user.setForeground(Color.decode("#0000FF"));
             } else {
-                panel.add(new JLabel(this.nom_utilisateur + " : ", JLabel.LEFT), BorderLayout.WEST);
-                panel.add(new JLabel(auto_saut((String) this.contenu), JLabel.LEFT), BorderLayout.CENTER);
-                JLabel Jdate = new JLabel(this.date.toString(), JLabel.LEFT);
-                Jdate.setFont(new Font("Arial", Font.ITALIC, 10));
-                Jdate.setForeground(Color.GRAY);
-                panel.add(Jdate, BorderLayout.SOUTH);
-                panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                user.setForeground(Color.decode("#00FF00"));
             }
+            user.setFont(new Font("Arial", Font.BOLD, 10));
+            panel.add(user);
+            for (String line : auto_saut((String) this.contenu, 50)) {
+                JLabel label = new JLabel(line);
+                label.setFont(new Font("Arial", Font.PLAIN, 12));
+                panel.add(label);
+            }
+            JLabel Jdate = new JLabel(this.date.toString());
+            Jdate.setFont(new Font("Arial", Font.ITALIC, 10));
+            Jdate.setForeground(Color.GRAY);
+            panel.add(Jdate);
         } else {
             // TODO: message image et autres
         }
@@ -64,18 +68,19 @@ public class Message implements Serializable {
         return nom_utilisateur;
     }
 
-    public String auto_saut(String text) {
-        // ajoute des \n pour que le texte s'affiche correctement
-        String res = "";
+    public ArrayList<String> auto_saut(String text, int nb_carac) {
+        ArrayList<String> texts = new ArrayList<>();
         int i = 0;
         while (i < text.length()) {
-            if (i % 30 == 0 && i != 0) {
-                res += "\n";
+            if (i + nb_carac < text.length()) {
+                texts.add(text.substring(i, i + nb_carac) + "-");
+                i += nb_carac;
+            } else {
+                texts.add(text.substring(i));
+                i = text.length();
             }
-            res += text.charAt(i);
-            i++;
         }
-        return res;
+        return texts;
     }
 
     @Override

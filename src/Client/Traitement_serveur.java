@@ -139,15 +139,29 @@ public class Traitement_serveur extends Thread {
                             case SUPPRESSION_UTILISATEUR_OK:
                                 System.out.println("Suppression utilisateur OK");
                                 Thread_Client.connexion.send(Connection_Codes.DECONNEXION);
+                                client.dispose();
                                 break;
                             case SUPPRESSION_UTILISATEUR_KO:
                                 System.out.println("Suppression utilisateur KO");
+                                if (annex != null){
+                                    fen.error(annex.get(0).toString());
+                                } else {
+                                    fen.error("Erreur lors de la suppression de l'utilisateur");
+                                }
                                 break;
                             case MODIFICATION_UTILISATEUR_OK:
                                 System.out.println("Modification utilisateur OK");
+                                if (annex != null){
+                                    fen.success(annex.get(0).toString());
+                                }
                                 break;
                             case MODIFICATION_UTILISATEUR_KO:
                                 System.out.println("Modification utilisateur KO");
+                                if (annex != null){
+                                    fen.error(annex.get(0).toString());
+                                } else {
+                                    fen.error("Erreur lors de la modification de l'utilisateur");
+                                }
                                 break;
                             case CREATION_ADMIN_DISCUSSION_OK:
                                 System.out.println("Creation admin groupe OK");

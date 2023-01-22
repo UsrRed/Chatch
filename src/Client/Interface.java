@@ -24,6 +24,8 @@ public class Interface extends JFrame {
         menu.add(config);
 
         messages_frame.setLayout(new BoxLayout(messages_frame, BoxLayout.Y_AXIS));
+        messages_frame.setBackground(Color.WHITE);
+        messages_frame.setMaximumSize(new Dimension(chat.getWidth(), 999999999));
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setPreferredSize(new Dimension(400, 400));
@@ -42,6 +44,8 @@ public class Interface extends JFrame {
 
         // Layouts
         messages_frame.setLayout(new BoxLayout(messages_frame, BoxLayout.Y_AXIS));
+        // messages_frame avec les éléments au top
+        messages_frame.setAlignmentY(Component.TOP_ALIGNMENT);
         entry.setLayout(new BoxLayout(entry, BoxLayout.X_AXIS));
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
 
@@ -68,6 +72,10 @@ public class Interface extends JFrame {
                     throw new RuntimeException(ex);
                 }
             }
+        });
+        // bouton de configuration
+        config.addActionListener(e -> {
+            new Interface_Config();
         });
         // envoi de message
         valid_entry.addActionListener(e -> {
@@ -156,7 +164,7 @@ public class Interface extends JFrame {
         messages_frame.removeAll();
         for (Object msg : messages) {
             // crée l'objet message
-            Message message = new Message((ArrayList) msg);
+            Message message = new Message((ArrayList) msg, messages_frame.getWidth());
             // ajoute le message à la liste
             messages_frame.add(message.getPane());
         }
@@ -167,7 +175,7 @@ public class Interface extends JFrame {
 
     public void addMessage(ArrayList<Object> msg) {
         // crée l'objet message
-        Message message = new Message(msg);
+        Message message = new Message(msg, messages_frame.getWidth());
         messages_frame.add(message.getPane());
         messages_frame.revalidate();
         messages_frame.repaint();
