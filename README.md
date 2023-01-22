@@ -55,7 +55,7 @@ Le projet Tchatch à pour but de réunir des personnes grâce à un tchat privé
 Ce nom provient de 3 mots différents concaténés : 
  - CHAT : en anglais, veut dire une discussion en français.
  - TO HATCH : en anglais, éclore en français. Car des nouvelles relations se forment et éclosent sur cette application.
- - TCHATCH : en français, fait référence au fait de discuter. Les deux mots précedent forment donc ce nom.
+ - CHATCH : ressemble à TCHATCH en français, fait référence au fait de discuter aisément. Les deux mots précedent forment donc ce nom.
 
 
 Ce projet a été réalisé par :
