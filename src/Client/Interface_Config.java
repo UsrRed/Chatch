@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe permet configurer les paramètre de l'utilisateur.
@@ -15,7 +16,9 @@ import java.util.ArrayList;
  * Il peut aussi supprimer son compte.
  */
 public class Interface_Config extends JFrame {
-
+    /**
+     * Constructeur de la classe Interface_Config (classe permettant la modification de l'utilisateur)
+     */
     public Interface_Config() {
         // permet de changer les caractéristiques de l'utilisateur (nom, mot de passe, email, photo)
         // permet de supprimer le compte
@@ -51,6 +54,8 @@ public class Interface_Config extends JFrame {
         south.add(cancel);
         south.add(Box.createRigidArea(new Dimension(0, 10)));
         add(south, BorderLayout.SOUTH);
+
+
         // les champs
         JPanel center = new JPanel();
         center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
@@ -171,21 +176,25 @@ public class Interface_Config extends JFrame {
                 if (password_confirm.equals(Thread_Client.connexion.getPassword())) {
                     ArrayList<Object> changements = new ArrayList<>();
                     String change = "";
+                    // on vérifie si le nom a changé
                     if (name_value.getText() != Thread_Client.connexion.getNom_utilisateur()) {
                         change += "\nNouveau nom : " + name_value.getText();
                         changements.add("nom_utilisateur");
                         changements.add(name_value.getText());
                     }
+                    // on vérifie si le mot de passe a changé
                     if (password_value.getText() != "********") {
                         change += "\nNouveau mot de passe : " + password_value.getText();
                         changements.add("motdepasse");
                         changements.add(password_value.getText());
                     }
+                    // on vérifie si l'email a changé
                     if (email_value.getText() != "********") {
                         change += "\nNouveau email : " + email_value.getText();
                         changements.add("adresse_email");
                         changements.add(email_value.getText());
                     }
+                    // on vérifie si la description a changé
                     if (description_value.getText() != "********") {
                         change += "\nNouvelle description : " + description_value.getText();
                         changements.add("description_utilisateur");

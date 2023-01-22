@@ -11,21 +11,37 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe permet de recevoir les requetes du client et de les traiter.
  * Une fois le traitement effectué, elle envoie la réponse au client.
  */
 public class Traitement_client extends Thread {
+    // Auto increment pour les id des clients
     private static final AtomicInteger ID_FACTORY = new AtomicInteger();
+    // compteur de clients
     private final int count;
+    // id du client
     private int id = -1;
+    // socket du client
     private Socket socket = null;
+    // objet de requête vers la base de données
     private BDD_Query query = null;
+    // port du client
     private int PORT;
+    // connexion avec le client
     Connect client = null;
+    // filtre de réception de données
     private String regex = "[^a-zA-Z0-9_@. !'$£%&*()\\-+=?;:,<>#{}\\[\\]~`^|]";
 
+    /**
+     * Constructeur de la classe Traitement_client, initialise les attributs de la classe.
+     *
+     * @param socket le socket du client
+     * @param data   les données du client
+     * @param PORT   le port sur lequel le serveur écoute
+     */
     public Traitement_client(Socket socket, Database data, int PORT) {
         count = ID_FACTORY.getAndIncrement();
         System.out.println("Client " + count + " : se connecte !");
@@ -34,6 +50,9 @@ public class Traitement_client extends Thread {
         query = new BDD_Query(data);
     }
 
+    /**
+     * Cette méthode permet de lancer le thread qui va écouter les requêtes du client.
+     */
     public void run() {
         Connection_format message = null;
         InputStream inputStream = null;
@@ -50,6 +69,7 @@ public class Traitement_client extends Thread {
                     Afficher(e.getMessage());
                     break;
                 }
+                // Connexion vers le client pour lui envoyer des messages
                 while (client == null) {
                     try {
                         client = new Connect(PORT + 1, socket.getInetAddress(), "Serveur", "password", true, null);
@@ -78,6 +98,7 @@ public class Traitement_client extends Thread {
                         }
                     }
                     try {
+                        // Affiche le message reçu
                         Afficher("Message reçu : code{" + code + "} annex{" + annex + "} extract{" + extract + "} Search{" + Search(annex) + "}");
                         // trie des différents codes
                         if (code == Connection_Codes.CONNEXION) {
@@ -142,9 +163,11 @@ public class Traitement_client extends Thread {
                                     break;
                                 case CREATION_DISCUSSION:
                                     if (annex != null) {
+                                        // vérification de l'existence de la discussion
                                         query.setQueryAsk("SELECT id_discussion FROM discussion WHERE nom_discussion=\"" + annex.get(0) + "\";");
                                         if (query.getQueryResult().size() == 0) {
                                             query.setQueryExecute("INSERT INTO discussion (nom_discussion) VALUES(\"" + annex.get(0) + "\");");
+                                            // vérification de l'existence de la discussion
                                             query.setQueryAsk("SELECT id_discussion FROM discussion WHERE nom_discussion=\"" + annex.get(0) + "\";");
                                             result = (ArrayList<Object>) query.getQueryResult().get(0);
                                             if (result.size() > 0) {
@@ -152,6 +175,7 @@ public class Traitement_client extends Thread {
                                                 do {
                                                     // créer le groupe de discussion et ajoute l'utilisateur
                                                     query.setQueryExecute("INSERT INTO groupe_discussion (id_utilisateur, id_discussion, role) VALUES(" + id + ", " + result.get(0) + ", 3);");
+                                                    // vérification de l'existence du groupe crée
                                                     query.setQueryAsk("SELECT id_groupe FROM groupe_discussion WHERE id_utilisateur=" + id + " AND id_discussion=" + result.get(0) + ";");
                                                     tentatives++;
                                                 } while (query.getQueryResult().size() == 0 && tentatives < 10);
@@ -191,6 +215,7 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case MODIFICATION_DISCUSSION:
+                                    /*
                                     if (annex != null) {
                                         query.setQueryExecute("UPDATE FROM discussion SET colone=" + annex.get(0) + " WHERE id_discussion=" + annex.get(1) + ";");
                                         query.setQueryAsk("SELECT * FROM discussion WHERE " + Search(annex) + ";");
@@ -206,6 +231,7 @@ public class Traitement_client extends Thread {
                                         error.add("Erreur de format");
                                         client.send(Connection_Codes.MODIFICATION_DISCUSSION_KO, error);
                                     }
+                                    */
                                     break;
                                 case ENVOI_MESSAGE:
                                     if (extract != null) {
@@ -215,6 +241,7 @@ public class Traitement_client extends Thread {
                                         String nom_utilisateur = (String) temp_result.get(0);
                                         // voir pour insérer l'objet message et l'id de l'utilisateur et son nom (auto)
                                         query.setQueryExecute("INSERT INTO message (id_utilisateur, nom_utilisateur, " + extract.get(0) + ") VALUES(" + id + ", \"" + nom_utilisateur + "\", " + extract.get(1) + ");");
+                                        // vérification de l'existence du message crée
                                         query.setQueryAsk("SELECT * FROM message WHERE id_utilisateur=" + id + " AND nom_utilisateur=\"" + nom_utilisateur + "\" AND " + Search(annex) + ";");
                                         if (query.getQueryResult().size() > 0) {
                                             System.out.println(query.getQueryResult());
@@ -233,6 +260,7 @@ public class Traitement_client extends Thread {
                                     break;
                                 case SUPPRESSION_MESSAGE:
                                     query.setQueryExecute("DELETE FROM message WHERE id_utilisateur=" + id + " AND " + Search(annex) + ";");
+                                    // vérification de l'existence du message supprimé
                                     query.setQueryAsk("SELECT * FROM message WHERE id_utilisateur=" + id + " AND " + Search(annex) + ";");
                                     if (query.getQueryResult().size() == 0) {
                                         client.send(Connection_Codes.SUPPRESSION_MESSAGE_OK);
@@ -244,6 +272,7 @@ public class Traitement_client extends Thread {
                                     break;
                                 case MODIFICATION_MESSAGE:
                                     query.setQueryExecute("UPDATE message SET contenu=\"" + annex.get(0) + "\" WHERE id_message=" + annex.get(1) + ";");
+                                    // vérification de l'existence du message modifié
                                     query.setQueryAsk("SELECT * FROM message WHERE id_message=" + annex.get(1) + ";");
                                     result = query.getQueryResult();
                                     header = query.getQueryHeader();
@@ -258,10 +287,12 @@ public class Traitement_client extends Thread {
                                 case SUPPRESSION_UTILISATEUR:
                                     query.setQueryExecute("DELETE FROM groupe_discussion WHERE id_utilisateur=" + id + ";");
                                     query.setQueryExecute("DELETE FROM connexions WHERE id_utilisateur=" + id + ";");
+                                    // récupère le nom de l'utilisateur selon son id
                                     query.setQueryAsk("SELECT nom_utilisateur FROM utilisateur WHERE id_utilisateur=" + id + ";");
                                     result = (ArrayList<Object>) query.getQueryResult().get(0);
                                     query.setQueryExecute("UPDATE message SET id_utilisateur=1, nom_utilisateur=\"(deleted account) " + result.get(0) + "\" WHERE id_utilisateur=" + id + ";");
                                     query.setQueryExecute("DELETE FROM utilisateur WHERE id_utilisateur=" + id + ";");
+                                    // vérification de l'existence de l'utilisateur supprimé
                                     query.setQueryAsk("SELECT * FROM utilisateur WHERE id_utilisateur=" + id + ";");
                                     if (query.getQueryResult().size() == 0) {
                                         ArrayList<Object> success = new ArrayList<>();
@@ -280,6 +311,7 @@ public class Traitement_client extends Thread {
                                         for (int i = 0; i < annex.size() / 2; i++) {
                                             switch ((String) annex.get(i * 2)) {
                                                 case "nom_utilisateur":
+                                                    // vérification de l'existence du nom_utilisateur
                                                     query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur=\"" + annex.get(i * 2 + 1) + "\";");
                                                     if (!(query.getQueryResult().size() == 0)) {
                                                         ArrayList<Object> error = new ArrayList<>();
@@ -289,6 +321,7 @@ public class Traitement_client extends Thread {
                                                     }
                                                     break;
                                                 case "motdepasse":
+                                                    // vérification de la validité du mot de passe
                                                     if (annex.get(i * 2 + 1).toString().length() < 4) {
                                                         ArrayList<Object> error = new ArrayList<>();
                                                         error.add("Mot de passe trop court");
@@ -297,6 +330,7 @@ public class Traitement_client extends Thread {
                                                     }
                                                     break;
                                                 case "adresse_email":
+                                                    // vérification de la validité de l'adresse email
                                                     query.setQueryAsk("SELECT * FROM utilisateur WHERE adresse_email=\"" + annex.get(i * 2 + 1) + "\";");
                                                     if (!(query.getQueryResult().size() == 0)) {
                                                         ArrayList<Object> error = new ArrayList<>();
@@ -379,6 +413,7 @@ public class Traitement_client extends Thread {
                                     }
                                     break;
                                 case RECUPERATION_DISCUSSIONS:
+                                    // récupérer les discussions auxquelles l'utilisateur est inscrit
                                     query.setQueryAsk("SELECT d.nom_discussion, d.id_discussion, d.photo_discussion FROM discussion d, groupe_discussion g WHERE g.id_utilisateur=" + id + " AND g.id_discussion=d.id_discussion;");
                                     ArrayList<Object> discussions = query.getQueryResult();
                                     client.send(Connection_Codes.RECUPERATION_DISCUSSIONS_OK, discussions);
@@ -436,6 +471,7 @@ public class Traitement_client extends Thread {
                                     // vérifier que l'utilisateur est bien dans la discussion
                                     query.setQueryAsk("SELECT * FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + " AND id_utilisateur=" + id + ";");
                                     if (query.getQueryResult().size() > 0) {
+                                        // récupérer les utilisateurs
                                         query.setQueryAsk("SELECT u.nom_utilisateur, u.description_utilisateur, u.photo_utilisateur FROM utilisateur u, groupe_discussion g WHERE g.id_discussion=" + annex.get(0) + " AND g.id_utilisateur=u.id_utilisateur;");
                                         ArrayList<Object> utilisateurs = query.getQueryResult();
                                         if (utilisateurs.size() > 0) {
@@ -557,6 +593,7 @@ public class Traitement_client extends Thread {
                                 query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur = \"" + annex.get(1) + "\";");
                                 if (query.getQueryResult().size() == 0) {
                                     query.setQueryExecute("INSERT INTO utilisateur (" + extract.get(0) + ") VALUES (" + extract.get(1) + ");");
+                                    // On vérifie que l'utilisateur a bien été créé
                                     query.setQueryAsk("SELECT * FROM utilisateur WHERE " + Search(annex) + ";");
                                     if (query.getQueryResult().size() != 0) {
                                         ArrayList<Object> success = new ArrayList<>();
@@ -585,6 +622,7 @@ public class Traitement_client extends Thread {
                             client.send(Connection_Codes.CONNEXION_KO, sended);
                         }
                     } catch (Exception e) {
+                        // gère les exceptions
                         if (e.getMessage().contains("Connection reset")) {
                             Afficher("Déconnecté (Connection reset)");
                             break;
@@ -618,6 +656,12 @@ public class Traitement_client extends Thread {
         Afficher("Déconnexion du serveur");
     }
 
+    /**
+     * génère un objet extraction permettant de fair des INSERT
+     *
+     * @param annex les données à extraire
+     * @return l'objet extraction (2 String)
+     */
     public ArrayList<String> Extraction(ArrayList<Object> annex) {
         if (annex != null) {
             if (annex.size() % 2 == 0) {
@@ -653,6 +697,12 @@ public class Traitement_client extends Thread {
 
     }
 
+    /**
+     * génère un objet recherche permettant de faire des SELECT
+     *
+     * @param annex les données à extraire
+     * @return l'objet recherche (1 String)
+     */
     public String Search(ArrayList<Object> annex) {
         if (annex != null) {
             if (annex.size() % 2 == 0) {
@@ -681,6 +731,12 @@ public class Traitement_client extends Thread {
         }
     }
 
+    /**
+     * génère un objet update permettant de faire des UPDATE
+     *
+     * @param annex les données à extraire
+     * @return l'objet update (1 String)
+     */
     public String SET(ArrayList<Object> annex) {
         if (annex != null) {
             if (annex.size() % 2 == 0) {
@@ -709,11 +765,21 @@ public class Traitement_client extends Thread {
         }
     }
 
-    // methode sanitize sql
+    /**
+     * filtre les caractères spéciaux pour éviter les injections SQL
+     *
+     * @param str la chaîne à filtrer
+     * @return la chaîne filtrée
+     */
     public String sanitize(String str) {
         return str.replaceAll(regex, "");
     }
 
+    /**
+     * affiche un message dans la console avec numéro de client et l'id de l'utilisateur
+     *
+     * @param text le message à afficher
+     */
     public void Afficher(String text) {
         if (id != -1) {
             System.out.println("client " + count + " (ID" + id + ") : " + text);

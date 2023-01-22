@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe permet de créer une fenêtre de connexion.
@@ -27,7 +28,7 @@ public class Interface_Connection extends JFrame {
 
         JPanel Connexion = new JPanel();
         Connexion.setLayout(new BoxLayout(Connexion, BoxLayout.Y_AXIS));
-
+        // Création des composants de la fenêtre de connexion
         JLabel Co_title = new JLabel("Connexion");
         Co_title.setFont(new Font("Arial", Font.BOLD, 20));
         Co_title.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -41,13 +42,14 @@ public class Interface_Connection extends JFrame {
         Co_password_text.setMaximumSize(new Dimension(200, 20));
         Co_password_text.setEchoChar('*');
 
-
+        // Création des boutons de la fenêtre de connexion
         JPanel Co_button = new JPanel();
         Co_button.setLayout(new BoxLayout(Co_button, BoxLayout.X_AXIS));
         JButton Co_button_connexion = new JButton("Se connecter");
         JButton Co_button_inscription = new JButton("S'inscrire -->");
         JButton Co_button_Serveur = new JButton("Serveur -->");
 
+        // Placement des composants de la fenêtre de connexion
         Connexion.add(Co_title);
         Connexion.add(Co_login);
         Connexion.add(Co_login_text);
@@ -59,7 +61,7 @@ public class Interface_Connection extends JFrame {
         Co_button.add(Co_button_inscription);
         Co_button.add(Co_button_Serveur);
 
-
+        // Création des composants de la fenêtre d'inscription
         JPanel Inscription = new JPanel();
         Inscription.setLayout(new BoxLayout(Inscription, BoxLayout.Y_AXIS));
         JLabel Cr_title = new JLabel("Création de compte");
@@ -83,17 +85,17 @@ public class Interface_Connection extends JFrame {
         Cr_mail.setAlignmentX(Component.CENTER_ALIGNMENT);
         JTextField Cr_mail_text = new JTextField();
         Cr_mail_text.setMaximumSize(new Dimension(200, 20));
-        //  Mettre une description au profil
         JLabel Cr_description = new JLabel("Description");
         Cr_description.setAlignmentX(Component.CENTER_ALIGNMENT);
         JTextField Cr_description_text = new JTextField();
         Cr_description_text.setMaximumSize(new Dimension(200, 20));
 
-
+        // Création des boutons de la fenêtre Inscription
         JPanel Cr_button = new JPanel();
         JButton Cr_button_connexion = new JButton("Se connecter -->");
         JButton Cr_button_inscription = new JButton("S'inscrire");
 
+        // Placement des composants de la fenêtre Inscription
         Inscription.add(Cr_title);
         Inscription.add(Cr_login);
         Inscription.add(Cr_login_text);
@@ -130,6 +132,7 @@ public class Interface_Connection extends JFrame {
         JButton Se_button_modifier = new JButton("Modifier");
         JButton Se_button_retour = new JButton("Retour -->");
 
+        // Placement des composants de la fenêtre de changement de connexion avec le serveur
         Server.add(Se_title);
         Server.add(Se_host);
         Server.add(Se_host_text);
@@ -140,6 +143,7 @@ public class Interface_Connection extends JFrame {
         Se_button.add(Se_button_modifier);
         Se_button.add(Se_button_retour);
 
+        // Ajout des propriétés de la fenêtre
         setTitle("Chatch - Connection"); // définit le titre de la fenêtre
         cardLayout = (CardLayout) cards.getLayout();
         setLayout(cardLayout);
@@ -188,6 +192,7 @@ public class Interface_Connection extends JFrame {
         Cr_button_connexion.addActionListener(e -> {
             cardLayout.show(cards, "Connexion");
         });
+        // Inscription
         Cr_button_inscription.addActionListener(e -> {
             if (Cr_password_text.getText().equals(Cr_password_confirm_text.getText())) {
                 ArrayList<String> data = new ArrayList<>();
@@ -212,6 +217,7 @@ public class Interface_Connection extends JFrame {
         Se_button_retour.addActionListener(e -> {
             cardLayout.show(cards, "Connexion");
         });
+        // Modification de la connexion avec le serveur
         Se_button_modifier.addActionListener(e -> {
             String temp_addr = Se_host_text.getText();
             try {
@@ -283,10 +289,12 @@ public class Interface_Connection extends JFrame {
                 }
             }
         });
+        // détection de l'appui des touches sur la page Connexion
         Connexion.addKeyListener(new KeyAdapter() {
             // TODO : ne fonctionne pas
             @Override
             public void keyPressed(KeyEvent e) {
+                // TODO : ne fonctionne pas
                 // si la touche entrée est pressée
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     Co_button_connexion.doClick();
@@ -301,10 +309,12 @@ public class Interface_Connection extends JFrame {
                 }
             }
         });
+        // détection de l'appui des touches sur la page Inscription
         Inscription.addKeyListener(new KeyAdapter() {
             // TODO : ne fonctionne pas
             @Override
             public void keyPressed(KeyEvent e) {
+                // TODO : ne fonctionne pas
                 // si la touche entrée est pressée
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     Cr_button_inscription.doClick();
@@ -341,6 +351,7 @@ public class Interface_Connection extends JFrame {
                 Cr_login_text.setText(Cr_login_text.getText().trim());
             }
         });
+        // test le mot de passe une fois saisi
         Cr_password_text.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -354,6 +365,7 @@ public class Interface_Connection extends JFrame {
                 }
             }
         });
+        // test le mot de passe comfirm une fois saisi
         Cr_password_confirm_text.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -367,6 +379,7 @@ public class Interface_Connection extends JFrame {
                 }
             }
         });
+        // test l'adresse mail une fois saisie
         Cr_mail_text.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -386,7 +399,7 @@ public class Interface_Connection extends JFrame {
                 Cr_description_text.setText(Cr_description_text.getText().trim());
             }
         });
-        // si une un JTextField a le focus
+        // si une un JTextField a le focus : remet la couleur blanche
         Co_login_text.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -433,10 +446,20 @@ public class Interface_Connection extends JFrame {
 
     }
 
+    /**
+     * Affiche un message d'erreur
+     *
+     * @param message String
+     */
     public void error(String message) {
         JOptionPane.showMessageDialog(this, message, "Erreur", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Affiche un message d'information
+     *
+     * @param message String
+     */
     public void success(String message) {
         JOptionPane.showMessageDialog(this, message, "Succès", JOptionPane.INFORMATION_MESSAGE);
     }

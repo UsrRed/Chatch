@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe permet d'initialiser le serveur.
@@ -16,6 +17,11 @@ public class Serveur {
     private ServerSocket server = null;
     private Socket socket = null;
 
+    /**
+     * Constructeur de la classe Serveur permettant de lancer le serveur.
+     *
+     * @throws IOException
+     */
     public Serveur() throws IOException {
         // Connection a la Database avec le fichier properties
         Properties properties = new Properties();

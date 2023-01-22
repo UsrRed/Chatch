@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe Threadé permet de traiter les messages entrants du serveur. (réponses aux requetes)
@@ -20,11 +21,20 @@ public class Traitement_serveur extends Thread {
     private Interface_Connection fen = null;
     Interface client = null;
 
+    /**
+     * Constructeur de la classe Traitement_serveur
+     *
+     * @param socket le socket du client
+     * @param fen    la fenêtre de connexion
+     */
     public Traitement_serveur(Socket socket, Interface_Connection fen) {
         this.socket = socket;
         this.fen = fen;
     }
 
+    /**
+     * Cette méthode permet de lancer le thread qui va traiter les messages entrants du serveur.
+     */
     public void run() {
         Connection_format message = null;
         InputStream inputStream = null;

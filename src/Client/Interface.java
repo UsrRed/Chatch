@@ -29,9 +29,12 @@ public class Interface extends JFrame {
     private JComboBox menuChannel = new JComboBox();
     // propriétés de la discussion
     private JPanel propriete = new JPanel();
+    // Les différents arguments de la discussion
     private JPanel sub_propriete = new JPanel();
 
-
+    /**
+     * Constructeur de la classe Interface (interface principale)
+     */
     public Interface() {
         super();
         // Place les menus dans la barre
@@ -92,6 +95,7 @@ public class Interface extends JFrame {
         setSize(1280, 720); // définit la taille de la fenêtre
         setLocationRelativeTo(null); // centre la fenêtre
 
+        // les listeners
         addWindowListener(new WindowAdapter() { // fermeture de la fenêtre
             public void windowClosing(WindowEvent e) {
                 try {
@@ -137,6 +141,7 @@ public class Interface extends JFrame {
             data_entry.requestFocus();
 
         });
+        // clic sur le menu déroulant
         menuChannel.addActionListener(e -> {
             if (menuChannel.getSelectedItem().equals("+")) {
                 // Ouvre une fenêtre pour créer un nouveau channel
@@ -151,7 +156,7 @@ public class Interface extends JFrame {
                     }
                 }
             } else {
-                // Récupère les messages du channel
+                // Récupère les messages du channel et actualise
                 ArrayList<Object> message = new ArrayList<>();
                 Channel discussion = (Channel) menuChannel.getSelectedItem();
                 message.add(discussion.getId());
@@ -242,18 +247,38 @@ public class Interface extends JFrame {
         });
     }
 
+    /**
+     * Affiche un message d'erreur
+     *
+     * @param message String
+     */
     public void error(String message) {
         JOptionPane.showMessageDialog(this, message, "Erreur", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Affiche un message d'information
+     *
+     * @param message String
+     */
     public void success(String message) {
         JOptionPane.showMessageDialog(this, message, "Succès", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Récupère l'ID du channel actuel
+     *
+     * @return int
+     */
     public int getID_current_Channel() {
         return ((Channel) menuChannel.getSelectedItem()).getId();
     }
 
+    /**
+     * actualise les messages de la discussion
+     *
+     * @param messages Arraylist
+     */
     public void setMessages(ArrayList messages) {
         messages_frame.removeAll();
         for (Object msg : messages) {
@@ -267,6 +292,11 @@ public class Interface extends JFrame {
         scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
     }
 
+    /**
+     * Ajoute un message à la discussion
+     *
+     * @param msg Arraylist
+     */
     public void addMessage(ArrayList<Object> msg) {
         // crée l'objet message
         Message message = new Message(msg, messages_frame.getWidth());
@@ -276,6 +306,11 @@ public class Interface extends JFrame {
         scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
     }
 
+    /**
+     * Actualise la liste des discussions
+     *
+     * @param channels Arraylist
+     */
     public void setDiscussions(ArrayList<Object> channels) {
         // TODO : optimiser le rafrachissement, ne pas avoir a redémarer.
         menuChannel.removeAllItems();
@@ -301,6 +336,11 @@ public class Interface extends JFrame {
         menuChannel.repaint();
     }
 
+    /**
+     * Affiche les caractéristiques de la discussion
+     *
+     * @param annex Arraylist
+     */
     public void set_discussion(ArrayList annex) {
         // récupère le nom du channel
         String channel_name = (String) annex.get(0);

@@ -1,4 +1,5 @@
 package tools;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette enumération représente les différentes intéractions possibles entre le client et le serveur.

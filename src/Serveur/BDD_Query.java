@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe nous simplifie la récupération des données de la base de données.

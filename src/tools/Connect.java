@@ -20,6 +20,17 @@ public class Connect {
     private String nom_utilisateur = null;
     private String password = null;
 
+    /**
+     * Constructeur de la classe Connect qui permet de créer une connexion serveur/client ou client/serveur.
+     *
+     * @param PORT            le port sur lequel le serveur écoute
+     * @param address         l'adresse du serveur
+     * @param nom_utilisateur le nom d'utilisateur
+     * @param password        le mot de passe
+     * @param exist           si l'utilisateur existe ou non
+     * @param data            les données de l'utilisateur
+     * @throws IOException
+     */
     public Connect(int PORT, InetAddress address, String nom_utilisateur, String password, Boolean exist, ArrayList<String> data) throws IOException {
         this.nom_utilisateur = nom_utilisateur;
         this.password = password;
@@ -59,6 +70,13 @@ public class Connect {
         }
     }
 
+    /**
+     * Cette méthode permet d'envoyer un message au serveur/ au client.
+     *
+     * @param code    le code de la requête
+     * @param message le message à envoyer
+     * @throws IOException
+     */
     public void send(Connection_Codes code, ArrayList<Object> message) throws IOException {
         System.out.println("    -Envoie du message " + code);
         try {
@@ -70,6 +88,12 @@ public class Connect {
         }
     }
 
+    /**
+     * Cette méthode permet d'envoyer un message au serveur/ au client.
+     *
+     * @param code le code de la requête
+     * @throws IOException
+     */
     public void send(Connection_Codes code) throws IOException {
         System.out.println("    -Envoie du message " + code);
         try {
@@ -81,6 +105,9 @@ public class Connect {
         }
     }
 
+    /**
+     * Cette méthode permet de fermer la connexion.
+     */
     public void close() {
         try {
             writer.close();
@@ -91,10 +118,20 @@ public class Connect {
         }
     }
 
+    /**
+     * Cette méthode permet de récupérer le nom d'utilisateur.
+     *
+     * @return le nom d'utilisateur
+     */
     public String getNom_utilisateur() {
         return nom_utilisateur;
     }
 
+    /**
+     * Cette méthode permet de récupérer le mot de passe.
+     *
+     * @return le mot de passe
+     */
     public String getPassword() {
         return password;
     }

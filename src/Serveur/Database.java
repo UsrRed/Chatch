@@ -2,6 +2,7 @@ package Serveur;
 
 import java.sql.*;
 import java.sql.Connection;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe fait le lien entre le serveur et la base de données.

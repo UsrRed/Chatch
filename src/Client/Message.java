@@ -5,6 +5,7 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+
 /**
  * @author : Eliott LEBOSSE et Yohann DENOYELLE
  * Cette classe représente les messages envoyés par les utilisateurs.
@@ -21,6 +22,12 @@ public class Message implements Serializable {
     protected String nom_utilisateur; // nom de l'utilisateur qui a envoyé le message
     protected JPanel panel; // panel du message
 
+    /**
+     * Classe message construit les propriétés dans d'un message et le transforme en JLabel
+     *
+     * @param message ArrayList
+     * @param width   int
+     */
     public Message(ArrayList message, int width) {
         this.id = (int) message.get(0);
         this.id_discussion = (int) message.get(1);
@@ -30,6 +37,7 @@ public class Message implements Serializable {
         this.type = (int) message.get(5);
         this.nom_utilisateur = (String) message.get(6);
 
+        // Création du panel du message
         panel = new JPanel();
         panel.setBackground(Color.WHITE);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -59,6 +67,13 @@ public class Message implements Serializable {
         }
     }
 
+    /**
+     * fait les sauts de ligne automatiquement pour éviter des messages trop longs
+     *
+     * @param text     String
+     * @param nb_carac int
+     * @return ArrayList de String (chaque String est une ligne)
+     */
     public ArrayList<String> auto_saut(String text, int nb_carac) {
         ArrayList<String> texts = new ArrayList<>();
         int i = 0;
@@ -74,6 +89,11 @@ public class Message implements Serializable {
         return texts;
     }
 
+    /**
+     * renvoie la description du message
+     *
+     * @return String
+     */
     @Override
     public String toString() {
         return "Message{" +
@@ -87,6 +107,11 @@ public class Message implements Serializable {
                 '}';
     }
 
+    /**
+     * renvoie le panel du message
+     *
+     * @return JPanel
+     */
     public JPanel getPane() {
         return panel;
     }
