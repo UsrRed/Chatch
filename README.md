@@ -30,14 +30,10 @@ Les principales caractéristiques du projet sont les suivantes :
 
 ### Comment installer l'application ?
 
-* Afin de créer les tables il faut executer le script "TABLES.sql"
-* Afin de configurer le serveur il faut editer le configuration.properties puis de lancer le serveur
-* Pour le côté client il suffit 
+* Afin de créer les tables il faut executer le script "TABLES.sql".
+* Afin de configurer le serveur il faut editer le configuration.properties puis de lancer le serveur.
+* Pour le côté client il suffit de lancer l'application et des suivre les informations.
 
-Décrivez comment installer votre application :
-* Quel script exécuter pour créer les tables ?
-* Comment configurer l'application côté serveur/côté client
-* Que faut-il démarrer ?
 
 ### Comment utiliser l'application ?
 
