@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Traitement_serveur extends Thread {
 
@@ -54,6 +55,9 @@ public class Traitement_serveur extends Thread {
                                 client = new Interface();
                                 fen.dispose();
                                 Thread_Client.connexion.send(Connection_Codes.RECUPERATION_DISCUSSIONS);
+                                if (annex.get(0) != null) {
+                                    client.success((String) annex.get(0));
+                                }
                                 break;
                             case CONNEXION_KO:
                                 System.out.println("Connexion KO");
@@ -196,12 +200,56 @@ public class Traitement_serveur extends Thread {
                                 System.out.println("Recuperation discussions KO");
                                 client.error("Erreur lors de la récupération des discussions");
                                 break;
+                            case RECUPERATION_DISCUSSION_OK:
+                                System.out.println("Recuperation discussion OK");
+                                client.set_discussion(annex);
+                                break;
+                            case RECUPERATION_DISCUSSION_KO:
+                                System.out.println("Recuperation discussion KO");
+                                if (annex != null){
+                                    client.error(annex.get(0).toString());
+                                } else {
+                                    client.error("Erreur lors de la récupération de la discussion");
+                                }
+                                break;
                             case RECUPERATION_UTILISATEURS_OK:
                                 System.out.println("Recuperation utilisateur OK");
                                 break;
                             case RECUPERATION_UTILISATEURS_KO:
                                 System.out.println("Recuperation utilisateur KO");
                                 client.error(annex.get(0).toString());
+                                break;
+                            case AJOUT_UTILISATEUR_DISCUSSION_OK:
+                                System.out.println("Ajout utilisateur discussion OK");
+                                if (annex != null){
+                                    client.success(annex.get(0).toString());
+                                } else {
+                                    client.success("Utilisateur ajouté à la discussion");
+                                }
+                                break;
+                            case AJOUT_UTILISATEUR_DISCUSSION_KO:
+                                System.out.println("Ajout utilisateur discussion KO");
+                                if (annex != null){
+                                    client.error(annex.get(0).toString());
+                                } else {
+                                    client.error("Erreur lors de l'ajout de l'utilisateur à la discussion");
+                                }
+                                break;
+                            case SUPPRESSION_UTILISATEUR_DISCUSSION_OK:
+                                System.out.println("Suppression utilisateur discussion OK");
+                                if (annex != null){
+                                    client.success(annex.get(0).toString());
+                                } else {
+                                    client.success("Utilisateur supprimé de la discussion");
+                                }
+                                break;
+                            case SUPPRESSION_UTILISATEUR_DISCUSSION_KO:
+                                System.out.println("Suppression utilisateur discussion KO");
+                                if (annex != null){
+                                    client.error(annex.get(0).toString());
+                                } else {
+                                    client.error("Erreur lors de la suppression de l'utilisateur de la discussion");
+                                }
                                 break;
                             default:
                                 System.out.println("Code inconnu");

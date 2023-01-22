@@ -64,6 +64,7 @@ public class Traitement_client extends Thread {
                     ArrayList<String> extract = Extraction(annex);
                     ArrayList<Object> result = null;
                     ArrayList<Object> header = null;
+                    ArrayList<Object> roles = null;
                     if (annex != null) {
                         for (int i = 0; i < annex.size(); i++) {
                             if (annex.get(i) instanceof String) {
@@ -79,11 +80,55 @@ public class Traitement_client extends Thread {
                             query.setQueryAsk("SELECT * FROM utilisateur WHERE nom_utilisateur=\"" + annex.get(0) + "\" AND motdepasse=\"" + annex.get(1) + "\";");
                             result = query.getQueryResult();
                             if (result.size() > 0) {
-                                client.send(Connection_Codes.CONNEXION_OK);
                                 // récupération de l'id de l'utilisateur
                                 ArrayList cl = (ArrayList) result.get(0);
                                 id = (int) cl.get(0);
+                                // insertion de la date de connection
+                                ArrayList<Object> bvn = new ArrayList<>();
+                                query.setQueryAsk("SELECT * FROM connexions WHERE id_utilisateur=" + id + ";");
+                                result = query.getQueryResult();
+                                if (result.size() == 0) {
+                                    // l'utilisateur n'a jamais été connecté
+                                    query.setQueryAsk("SELECT * FROM connexions WHERE adresse_ip=\"" + socket.getInetAddress() + "\";");
+                                    result = query.getQueryResult();
+                                    if (result.size() == 0) {
+                                        // l'adresse ip n'a jamais été utilisée : nouvel utilisateur
+                                        query.setQueryExecute("INSERT INTO connexions (id_utilisateur, adresse_ip) VALUES (" + id + ", \"" + socket.getInetAddress() + "\");");
+                                        bvn.add("Bienvenue " + annex.get(0) + " !\n" +
+                                                "Vous pouvez découvrir toutes les fonctionnalités de l'application sur le README.\n" +
+                                                "Pour débuter vous pouvez appuyer sur le \"+\" afin de crée une discussion.\n" +
+                                                "Vous pourrez ensuite avec le menu à droite ajouter des personnes à votre discussion.\n" +
+                                                "Sachez que vous avez été ajouté à la base de donnée.\n" +
+                                                "Votre adresse ip est : " + socket.getInetAddress() + "\n" +
+                                                "Vous êtes l'utilisateur n°" + id);
+                                    } else {
+                                        // l'adresse ip a déjà été utilisée : multicompte
+                                        query.setQueryExecute("INSERT INTO connexions (id_utilisateur, adresse_ip) VALUES (" + id + ", \"" + socket.getInetAddress() + "\");");
+                                        bvn.add("Bienvenue " + annex.get(0) + " !\n" +
+                                                "Vous avez créer un nouveau compte.\n" +
+                                                "Vous avez été ajouté à la base de donnée.\n" +
+                                                "Votre adresse ip est : " + socket.getInetAddress() + "\n" +
+                                                "Vous êtes l'utilisateur n°" + id);
+                                    }
+                                } else {
+                                    // l'utilisateur a déjà été connecté
+                                    query.setQueryAsk("SELECT * FROM connexions WHERE adresse_ip=\"" + socket.getInetAddress() + "\";");
+                                    result = query.getQueryResult();
+                                    if (result.size() > 0) {
+                                        // l'adresse ip est déjà utilisée : connection classique
+                                        query.setQueryExecute("UPDATE connexions SET id_utilisateur=" + id + " WHERE adresse_ip=\"" + socket.getInetAddress() + "\";");
+                                    } else {
+                                        // l'adresse ip n'est pas utilisée : connection depuis un nouvel appareil
+                                        query.setQueryExecute("INSERT INTO connexions (id_utilisateur, adresse_ip) VALUES (" + id + ", \"" + socket.getInetAddress() + "\");");
+                                        bvn.add("Bienvenue " + annex.get(0) + " !\n" +
+                                                "Vous vous êtes connecté depuis un nouvel appareil.\n" +
+                                                "Votre adresse ip est : " + socket.getInetAddress() + "\n" +
+                                                "Vous êtes l'utilisateur n°" + id);
+                                    }
+                                }
+                                query.setQueryExecute("INSERT INTO connexions (id_utilisateur, adresse_ip) VALUES (" + id + ", \"" + socket.getInetAddress() + "\");");
                                 connected = true;
+                                client.send(Connection_Codes.CONNEXION_OK, bvn);
                             } else {
                                 client.send(Connection_Codes.CONNEXION_KO);
                             }
@@ -102,7 +147,7 @@ public class Traitement_client extends Thread {
                                                 int tentatives = 0;
                                                 do {
                                                     // créer le groupe de discussion et ajoute l'utilisateur
-                                                    query.setQueryExecute("INSERT INTO groupe_discussion (id_utilisateur, id_discussion) VALUES(" + id + ", " + result.get(0) + ");");
+                                                    query.setQueryExecute("INSERT INTO groupe_discussion (id_utilisateur, id_discussion, role) VALUES(" + id + ", " + result.get(0) + ", 3);");
                                                     query.setQueryAsk("SELECT id_groupe FROM groupe_discussion WHERE id_utilisateur=" + id + " AND id_discussion=" + result.get(0) + ";");
                                                     tentatives++;
                                                 } while (query.getQueryResult().size() == 0 && tentatives < 10);
@@ -129,6 +174,8 @@ public class Traitement_client extends Thread {
 
                                     break;
                                 case SUPPRESSION_DISCUSSION:
+                                    query.setQueryExecute("DELETE FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + ";");
+                                    query.setQueryExecute("DELETE FROM message WHERE id_discussion=" + annex.get(0) + ";");
                                     query.setQueryExecute("DELETE FROM discussion WHERE id_discussion=" + annex.get(0) + ";");
                                     query.setQueryAsk("SELECT * FROM discussion WHERE id_discussion=" + annex.get(0) + ";");
                                     if (query.getQueryResult().size() == 0) {
@@ -208,7 +255,7 @@ public class Traitement_client extends Thread {
                                     query.setQueryExecute("DELETE FROM groupe_discussion WHERE id_utilisateur=" + id + ";");
                                     query.setQueryExecute("DELETE FROM connexions WHERE id_utilisateur=" + id + ";");
                                     query.setQueryAsk("SELECT nom_utilisateur FROM utilisateur WHERE id_utilisateur=" + id + ";");
-                                    result =(ArrayList<Object>) query.getQueryResult().get(0);
+                                    result = (ArrayList<Object>) query.getQueryResult().get(0);
                                     query.setQueryExecute("UPDATE message SET id_utilisateur=1, nom_utilisateur=\"(deleted account) " + result.get(0) + "\" WHERE id_utilisateur=" + id + ";");
                                     query.setQueryExecute("DELETE FROM utilisateur WHERE id_utilisateur=" + id + ";");
                                     query.setQueryAsk("SELECT * FROM utilisateur WHERE id_utilisateur=" + id + ";");
@@ -332,6 +379,55 @@ public class Traitement_client extends Thread {
                                     ArrayList<Object> discussions = query.getQueryResult();
                                     client.send(Connection_Codes.RECUPERATION_DISCUSSIONS_OK, discussions);
                                     break;
+                                case RECUPERATION_DISCUSSION:
+                                    // récupère les données de la discussion
+                                    // fournie un id de discussion
+                                    // Nom du channel
+                                    // Nombre de messages
+                                    // Liste des membres
+                                    if (annex.size() == 1) {
+                                        // vérifier que l'utilisateur est bien dans la discussion et récupérer l'id de la discussion
+                                        query.setQueryAsk("SELECT * FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + " AND id_utilisateur=" + id + ";");
+                                        if (query.getQueryResult().size() > 0) {
+                                            int id_discussion = -1;
+                                            try {
+                                                id_discussion = (int) annex.get(0);
+                                            } catch (Exception e) {
+                                                ArrayList<Object> error = new ArrayList<>();
+                                                error.add("Erreur de format");
+                                                client.send(Connection_Codes.RECUPERATION_DISCUSSION_KO, error);
+                                                break;
+                                            }
+                                            // récupérer le nom de la discussion
+                                            query.setQueryAsk("SELECT nom_discussion FROM discussion WHERE id_discussion=" + id_discussion + ";");
+                                            ArrayList<Object> nom_discussions = (ArrayList<Object>) query.getQueryResult().get(0);
+                                            String nom_discussion = (String) nom_discussions.get(0);
+                                            // récupérer le nombre de messages
+                                            query.setQueryAsk("SELECT COUNT(*) FROM message WHERE id_discussion=" + id_discussion + ";");
+                                            result = (ArrayList<Object>) query.getQueryResult().get(0);
+                                            long nb_messages = (long) result.get(0);
+                                            // récupérer la liste des membres
+                                            // TODO : donner la photo de la discussion
+                                            // query.setQueryAsk("SELECT u.nom_utilisateur, u.photo_utilisateur FROM utilisateur u, groupe_discussion g WHERE g.id_discussion=" + id_discussion + " AND g.id_utilisateur=u.id_utilisateur;");
+                                            query.setQueryAsk("SELECT u.nom_utilisateur, u.description_utilisateur, g.role FROM utilisateur u, groupe_discussion g WHERE g.id_discussion=" + id_discussion + " AND g.id_utilisateur=u.id_utilisateur;");
+                                            ArrayList<Object> data = query.getQueryResult();
+
+                                            ArrayList<Object> discussion = new ArrayList<>();
+                                            discussion.add(nom_discussion);
+                                            discussion.add(nb_messages);
+                                            discussion.add(data);
+                                            client.send(Connection_Codes.RECUPERATION_DISCUSSION_OK, discussion);
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("Vous n'êtes pas dans cette discussion");
+                                            client.send(Connection_Codes.RECUPERATION_DISCUSSION_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Erreur de format");
+                                        client.send(Connection_Codes.RECUPERATION_DISCUSSION_KO, error);
+                                    }
+                                    break;
                                 case RECUPERATION_UTILISATEURS:
                                     // vérifier que l'utilisateur est bien dans la discussion
                                     query.setQueryAsk("SELECT * FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + " AND id_utilisateur=" + id + ";");
@@ -349,6 +445,102 @@ public class Traitement_client extends Thread {
                                         ArrayList<Object> error = new ArrayList<>();
                                         error.add("Vous n'êtes pas dans cette discussion");
                                         client.send(Connection_Codes.RECUPERATION_UTILISATEURS_KO, error);
+                                    }
+                                    break;
+                                case AJOUT_UTILISATEUR_DISCUSSION:
+                                    // vérifier que l'utilisateur est bien dans la discussion
+                                    query.setQueryAsk("SELECT role FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + " AND id_utilisateur=" + id + ";");
+                                    roles = (ArrayList) query.getQueryResult().get(0);
+                                    int role = (int) roles.get(0);
+                                    if (query.getQueryResult().size() > 0) {
+                                        // vérifier que l'utilisateur n'est pas déjà dans la discussion
+                                        query.setQueryAsk("SELECT * FROM groupe_discussion g, utilisateur u WHERE g.id_discussion=" + annex.get(0) + " AND u.nom_utilisateur='" + annex.get(1) + "' AND g.id_utilisateur=u.id_utilisateur;");
+                                        if (query.getQueryResult().size() == 0) {
+                                            int ext_role = (int) annex.get(2);
+                                            String txt_role = "";
+                                            switch (ext_role) {
+                                                case 0:
+                                                    txt_role = "utilisateur";
+                                                    break;
+                                                case 1:
+                                                    txt_role = "modérateur";
+                                                    break;
+                                                case 2:
+                                                    txt_role = "administrateur";
+                                                    break;
+                                                default:
+                                                    txt_role = "utilisateur";
+                                                    break;
+                                            }
+                                            if (ext_role <= role) {
+                                                query.setQueryAsk("SELECT id_utilisateur FROM utilisateur WHERE nom_utilisateur=\"" + annex.get(1) + "\";");
+                                                ArrayList<Object> id_utilisateur =(ArrayList<Object>) query.getQueryResult().get(0);
+                                                // ajouter l'utilisateur à la discussion
+                                                query.setQueryExecute("INSERT INTO groupe_discussion (id_discussion, id_utilisateur, role) VALUES (" + annex.get(0) + ", " + id_utilisateur.get(0) + ", " + annex.get(2) + ");");
+                                                query.setQueryAsk("SELECT * FROM groupe_discussion g, utilisateur u WHERE g.id_discussion=" + annex.get(0) + " AND u.nom_utilisateur='" + annex.get(1) + "' AND g.id_utilisateur=u.id_utilisateur;");
+                                                if (query.getQueryResult().size() > 0) {
+                                                    ArrayList<Object> success = new ArrayList<>();
+                                                    success.add("Le'utilisateur " + txt_role + " a bien été ajouté à la discussion");
+                                                    client.send(Connection_Codes.AJOUT_UTILISATEUR_DISCUSSION_OK, success);
+                                                } else {
+                                                    ArrayList<Object> error = new ArrayList<>();
+                                                    error.add("Erreur lors de l'ajout de l'utilisateur");
+                                                    client.send(Connection_Codes.AJOUT_UTILISATEUR_DISCUSSION_KO, error);
+                                                }
+                                            } else {
+                                                ArrayList<Object> error = new ArrayList<>();
+                                                error.add("Vous n'avez pas assez de droits pour ajouter un " + txt_role + " à cette discussion");
+                                                client.send(Connection_Codes.AJOUT_UTILISATEUR_DISCUSSION_KO, error);
+                                            }
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("L'utilisateur est déjà dans la discussion");
+                                            client.send(Connection_Codes.AJOUT_UTILISATEUR_DISCUSSION_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Vous n'êtes pas dans cette discussion");
+                                        client.send(Connection_Codes.AJOUT_UTILISATEUR_DISCUSSION_KO, error);
+                                    }
+                                    break;
+                                case SUPPRESSION_UTILISATEUR_DISCUSSION:
+                                    // vérifier que l'utilisateur est bien dans la discussion et qu'il est admin
+                                    query.setQueryAsk("SELECT role FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + " AND id_utilisateur=" + id + ";");
+                                    if (query.getQueryResult().size() > 0) {
+                                        roles = (ArrayList) query.getQueryResult().get(0);
+                                        int self_role = (int) roles.get(0);
+                                        // vérifier que l'utilisateur est bien dans la discussion et on compare le role de l'utilisateur à supprimer
+                                        query.setQueryAsk("SELECT g.role FROM groupe_discussion g, utilisateur u WHERE g.id_discussion=" + annex.get(0) + " AND u.nom_utilisateur='" + annex.get(1) + "' AND g.id_utilisateur=u.id_utilisateur;");
+                                        if (query.getQueryResult().size() > 0) {
+                                            roles = (ArrayList) query.getQueryResult().get(0);
+                                            int user_role = (int) roles.get(0);
+                                            System.out.println("self_role : " + self_role + " user_role : " + user_role);
+                                            if (self_role > user_role) {
+                                                // supprimer l'utilisateur de la discussion
+                                                query.setQueryAsk("DELETE FROM groupe_discussion WHERE id_discussion=" + annex.get(0) + " AND id_utilisateur=" + annex.get(1) + ";");
+                                                if (query.getQueryResult().size() == 0) {
+                                                    ArrayList<Object> success = new ArrayList<>();
+                                                    success.add("L'utilisateur a bien été supprimé de la discussion");
+                                                    client.send(Connection_Codes.SUPPRESSION_UTILISATEUR_DISCUSSION_OK, success);
+                                                } else {
+                                                    ArrayList<Object> error = new ArrayList<>();
+                                                    error.add("Erreur lors de la suppression de l'utilisateur");
+                                                    client.send(Connection_Codes.SUPPRESSION_UTILISATEUR_DISCUSSION_KO, error);
+                                                }
+                                            } else {
+                                                ArrayList<Object> error = new ArrayList<>();
+                                                error.add("Vous ne pouvez pas supprimer un utilisateur avec un rôle supérieur ou égal au votre");
+                                                client.send(Connection_Codes.SUPPRESSION_UTILISATEUR_DISCUSSION_KO, error);
+                                            }
+                                        } else {
+                                            ArrayList<Object> error = new ArrayList<>();
+                                            error.add("L'utilisateur n'est pas dans la discussion");
+                                            client.send(Connection_Codes.SUPPRESSION_UTILISATEUR_DISCUSSION_KO, error);
+                                        }
+                                    } else {
+                                        ArrayList<Object> error = new ArrayList<>();
+                                        error.add("Vous n'êtes pas dans cette discussion");
+                                        client.send(Connection_Codes.SUPPRESSION_UTILISATEUR_DISCUSSION_KO, error);
                                     }
                                     break;
                                 default:

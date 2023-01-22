@@ -10,19 +10,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Interface extends JFrame {
-    private JPanel messages_frame = new JPanel();
+    // chat comportant message_frame et l'envoie de messages
     private JPanel chat = new JPanel();
-    private JPanel menu = new JPanel();
-    private JComboBox menuChannel = new JComboBox();
+    // frame avec les messages
+    private JPanel messages_frame = new JPanel();
+    // scrollbar pour les messages (contient messages_frame)
     JScrollPane scroll = new JScrollPane(messages_frame);
+    // menu de selection en haut
+    private JPanel menu = new JPanel();
+    // les channels disponibles
+    private JComboBox menuChannel = new JComboBox();
+    // propriétés de la discussion
+    private JPanel propriete = new JPanel();
+    private JPanel sub_propriete = new JPanel();
+
 
     public Interface() {
         super();
         // Place les menus dans la barre
-        JButton config = new JButton(" Configuration ");
+        JButton config = new JButton("Configuration");
         menu.add(menuChannel);
         menu.add(config);
 
+        // le chat
         messages_frame.setLayout(new BoxLayout(messages_frame, BoxLayout.Y_AXIS));
         messages_frame.setBackground(Color.WHITE);
         messages_frame.setMaximumSize(new Dimension(chat.getWidth(), 999999999));
@@ -42,12 +52,25 @@ public class Interface extends JFrame {
         entry.add(valid_entry);
         chat.add(entry);
 
-        // Layouts
         messages_frame.setLayout(new BoxLayout(messages_frame, BoxLayout.Y_AXIS));
-        // messages_frame avec les éléments au top
         messages_frame.setAlignmentY(Component.TOP_ALIGNMENT);
         entry.setLayout(new BoxLayout(entry, BoxLayout.X_AXIS));
         chat.setLayout(new BoxLayout(chat, BoxLayout.Y_AXIS));
+
+        // propriétés de la discussion
+        propriete.setLayout(new BoxLayout(propriete, BoxLayout.Y_AXIS));
+        propriete.setBorder(BorderFactory.createTitledBorder("Propriétés de la discussion"));
+        propriete.setAlignmentX(Component.CENTER_ALIGNMENT);
+        propriete.add(sub_propriete);
+        sub_propriete.setLayout(new BoxLayout(sub_propriete, BoxLayout.Y_AXIS));
+        JButton add_user = new JButton("Ajouter un utilisateur");
+        propriete.add(add_user);
+        propriete.add(Box.createRigidArea(new Dimension(0, 10)));
+        JButton remove_user = new JButton("Supprimer un utilisateur");
+        propriete.add(remove_user);
+        propriete.add(Box.createRigidArea(new Dimension(0, 10)));
+        JButton remove_discussion = new JButton("Supprimer la discussion");
+        propriete.add(remove_discussion);
 
         setTitle("Chatch"); // définit le titre de la fenêtre
         //setResizable(false); // permet de désactiver le carré qui agrandi la fenêtre
@@ -58,6 +81,7 @@ public class Interface extends JFrame {
         // placement des éléments
         add(chat, BorderLayout.CENTER);
         add(menu, BorderLayout.NORTH);
+        add(propriete, BorderLayout.EAST);
         show();
         setSize(1280, 720); // définit la taille de la fenêtre
         setLocationRelativeTo(null); // centre la fenêtre
@@ -82,8 +106,6 @@ public class Interface extends JFrame {
             // récupère le texte de data_entry
             String data = data_entry.getText();
             if (!data.equals("")) {
-                // récupère le nom_utilisateur
-                String nom_utilisateur = Thread_Client.connexion.getNom_utilisateur();
                 // récupère le channel actuel
                 int channel = getID_current_Channel();
                 // envoie le message
@@ -137,6 +159,12 @@ public class Interface extends JFrame {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+                // Récupère les propriétés du channel
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.RECUPERATION_DISCUSSION, message);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         // envoi de message avec la touche entrée
@@ -144,6 +172,63 @@ public class Interface extends JFrame {
             // TODO ne fonctionne pas
             if (e.getActionCommand().equals("Enter")) {
                 valid_entry.doClick();
+            }
+        });
+        // ajoute un utilisateur
+        add_user.addActionListener(e -> {
+            // récupère le channel actuel
+            int channel = getID_current_Channel();
+            // récupère le nom de l'utilisateur
+            String user_name = JOptionPane.showInputDialog("Nom de l'utilisateur");
+            // dialog avec le choix du role de l'utilisateur
+            Object[] options = {"Administrateur", "Modérateur", "Membre"};
+            int role = JOptionPane.showOptionDialog(null,
+                    "Quel est le rôle de l'invité ?", "Rôle de l'utilisateur",
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2])+1;
+            if (user_name != null) {
+                // envoie le message
+                ArrayList<Object> message = new ArrayList<>();
+                message.add(channel);
+                message.add(user_name);
+                message.add(role);
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.AJOUT_UTILISATEUR_DISCUSSION, message);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        // supprime un utilisateur
+        remove_user.addActionListener(e -> {
+            // récupère le channel actuel
+            int channel = getID_current_Channel();
+            // récupère le nom de l'utilisateur
+            String user_name = JOptionPane.showInputDialog("Nom de l'utilisateur");
+            if (user_name != null) {
+                // envoie le message
+                ArrayList<Object> message = new ArrayList<>();
+                message.add("id_discussion");
+                message.add(channel);
+                message.add("nom_utilisateur");
+                message.add(user_name);
+                try {
+                    Thread_Client.connexion.send(Connection_Codes.SUPPRESSION_UTILISATEUR_DISCUSSION, message);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        // supprime un channel
+        remove_discussion.addActionListener(e -> {
+            // récupère le channel actuel
+            int channel = getID_current_Channel();
+            // envoie le message
+            ArrayList<Object> message = new ArrayList<>();
+            message.add(channel);
+            try {
+                Thread_Client.connexion.send(Connection_Codes.SUPPRESSION_DISCUSSION, message);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
     }
@@ -204,6 +289,50 @@ public class Interface extends JFrame {
         menuChannel.addItem("+");
         menuChannel.revalidate();
         menuChannel.repaint();
-        // add listener
+    }
+
+    public void set_discussion(ArrayList annex) {
+        // récupère le nom du channel
+        String channel_name = (String) annex.get(0);
+        // récupère le nombre de messages
+        long nb_messages = (long) annex.get(1);
+        // récupère le nombre d'utilisateurs
+        ArrayList<Object> membres = (ArrayList) annex.get(2);
+        int nb_membres = membres.size();
+        sub_propriete.removeAll();
+        sub_propriete.add(new JLabel("Nom du channel : " + channel_name));
+        sub_propriete.add(new JLabel("Nombre de messages : " + nb_messages));
+        sub_propriete.add(new JLabel("Membres (" + nb_membres + ") : "));
+        for (int i = 0; i < membres.size(); i++) {
+            ArrayList<Object> membre = (ArrayList<Object>) membres.get(i);
+            String nom = (String) membre.get(0);
+            String description = (String) membre.get(1);
+            int role_id = (int) membre.get(2);
+            JLabel Jnom = new JLabel(nom);
+            if (role_id == 1) {
+                Jnom.setText(Jnom.getText() + " (Admin)");
+                Jnom.setForeground(Color.RED);
+            } else if (role_id == 2) {
+                Jnom.setText(Jnom.getText() + " (Modérateur)");
+                Jnom.setForeground(Color.BLUE);
+            } else if (role_id == 3) {
+                Jnom.setText(Jnom.getText() + " (Membre)");
+                Jnom.setForeground(Color.BLACK);
+            } else {
+                Jnom.setText(Jnom.getText() + " (Membre)");
+                Jnom.setForeground(Color.BLACK);
+            }
+            sub_propriete.add(Jnom);
+            if (description != null) {
+                JLabel Jdescription = new JLabel("\t\t" + description);
+                Jdescription.setForeground(Color.GRAY);
+                Jdescription.setFont(new Font("Arial", Font.ITALIC, 12));
+                sub_propriete.add(Jdescription);
+            }
+        }
+        sub_propriete.revalidate();
+        sub_propriete.repaint();
+        propriete.revalidate();
+        propriete.repaint();
     }
 }
